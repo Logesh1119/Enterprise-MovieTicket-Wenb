@@ -1,0 +1,62 @@
+@page
+@model MovieTicketBooking.Pages.Account.LoginModel
+
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Welcome back";
+}
+
+<div class="auth-container">
+    <!-- MoviePlex Official Logo Centered Above Card -->
+    <div class="auth-logo-container">
+        <img src="~/uploads/UI/Movieplex_logo logo.png" alt="MoviePlex Logo" class="auth-logo" />
+    </div>
+
+    <!-- White Authentication Card -->
+    <div class="auth-card">
+        <h2 class="auth-title">Welcome back</h2>
+        <p class="auth-subtitle">Please login with your movieplex account credentials.</p>
+
+        <!-- Login Form -->
+        <form method="post" asp-route-ReturnUrl="@Model.ReturnUrl">
+            <input type="hidden" asp-for="ReturnUrl" />
+            <!-- Email Input -->
+            <div class="auth-floating-group">
+                <label>Email address</label>
+                <input asp-for="Login.Email" class="auth-input" placeholder="deepika.param@marlensoft.com" required />
+                <span asp-validation-for="Login.Email" class="auth-field-validation"></span>
+            </div>
+
+            <!-- Password Input -->
+            <div class="auth-floating-group">
+                <label>Password</label>
+                <input asp-for="Login.Password" type="password" id="loginPassword" class="auth-input" placeholder="••••••••••••" required />
+                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('loginPassword', this)" aria-label="Toggle password visibility">
+                    <i class="fa-regular fa-eye"></i>
+                </button>
+                <span asp-validation-for="Login.Password" class="auth-field-validation"></span>
+            </div>
+
+            <!-- Remember Me & Forgot Password Row -->
+            <div class="auth-row-between">
+                <div class="auth-checkbox-group">
+                    <input type="checkbox" id="rememberMe" class="auth-checkbox" />
+                    <label for="rememberMe" class="auth-checkbox-label">Remember me</label>
+                </div>
+                <a asp-page="/Account/ForgetPassword" class="auth-forgot-link">Forgot password?</a>
+            </div>
+
+            <!-- Primary Login Button -->
+            <button type="submit" class="btn btn-auth-primary">Login</button>
+        </form>
+
+        <!-- Register Link -->
+        <div class="auth-card-footer">
+            Don't have an account? <a asp-page="/Account/Register" asp-route-ReturnUrl="@Model.ReturnUrl">Register here</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

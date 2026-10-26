@@ -1,0 +1,112 @@
+@page
+@model MovieTicketBooking.Pages.Customer.Home.IndexModel
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="hero-section position-relative overflow-hidden mb-5" style="height: 60vh; min-height: 500px;">
+    <div class="position-absolute w-100 h-100" style="background: url('/images/hero-bg.jpg') center/cover no-repeat; filter: brightness(0.4);"></div>
+    <div class="container h-100 position-relative">
+        <div class="row h-100 align-items-center">
+            <div class="col-lg-8">
+                <span class="badge bg-danger mb-3 px-3 py-2 rounded-pill tracking-wider text-uppercase">Now Showing</span>
+                <h1 class="display-3 fw-bold text-white mb-4" style="font-family: 'Outfit', sans-serif;">Experience Cinema <br><span class="text-danger">Like Never Before</span></h1>
+                <p class="lead text-light mb-5" style="max-width: 600px;">Book tickets for the latest movies across all theaters. Enjoy seamless booking, great offers, and the best seats in the house.</p>
+                <div class="d-flex gap-3">
+                    <a asp-page="/Customer/Movies/Index" class="btn btn-brand btn-lg rounded-pill px-5">Book Now</a>
+                    <a asp-page="/Customer/Theaters/Index" class="btn btn-outline-light btn-lg rounded-pill px-5">View Theaters</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">Featured Movies</h2>
+            <p class="text-muted mb-0">Catch the biggest hits currently playing</p>
+        </div>
+        <a asp-page="/Customer/Movies/Index" class="btn btn-link text-danger text-decoration-none">View All <i class="fa-solid fa-arrow-right ms-2"></i></a>
+    </div>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        @foreach (var movie in Model.FeaturedMovies.Take(8))
+        {
+            <div class="col">
+                <a asp-page="/Customer/Movies/Details" asp-route-id="@movie.Id" class="text-decoration-none">
+                    <div class="card h-100 border-0 bg-transparent text-white movie-card">
+                        <div class="position-relative overflow-hidden rounded-4 mb-3" style="aspect-ratio: 2/3;">
+                            @if (!string.IsNullOrEmpty(movie.PosterUrl))
+                            {
+                                <img src="@movie.PosterUrl" class="w-100 h-100 object-fit-cover" alt="@movie.MovieName">
+                            }
+                            else
+                            {
+                                <div class="w-100 h-100 bg-secondary d-flex align-items-center justify-content-center">
+                                    <i class="fa-solid fa-film fa-3x text-muted"></i>
+                                </div>
+                            }
+                            <div class="position-absolute top-0 end-0 m-3">
+                                <span class="badge bg-dark bg-opacity-75 border border-secondary text-light">@movie.CertificateName</span>
+                            </div>
+                            <div class="card-overlay position-absolute bottom-0 w-100 p-3" style="background: linear-gradient(transparent, rgba(0,0,0,0.9));">
+                                <span class="btn btn-danger btn-sm w-100 rounded-pill opacity-0 btn-book-overlay">Book Tickets</span>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-1 text-truncate">@movie.MovieName</h5>
+                        <p class="text-muted small mb-0"><i class="fa-regular fa-clock me-1"></i> @movie.Duration mins</p>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="container mb-5 pb-5">
+    <div class="d-flex justify-content-between align-items-end mb-4 mt-5">
+        <div>
+            <h2 class="fw-bold mb-1">Coming Soon</h2>
+            <p class="text-muted mb-0">Upcoming releases you won't want to miss</p>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        @foreach (var movie in Model.UpcomingMovies.Take(4))
+        {
+            <div class="col">
+                <a asp-page="/Customer/Movies/Details" asp-route-id="@movie.Id" class="text-decoration-none">
+                    <div class="card h-100 border-0 bg-transparent text-white movie-card">
+                        <div class="position-relative overflow-hidden rounded-4 mb-3" style="aspect-ratio: 2/3;">
+                            @if (!string.IsNullOrEmpty(movie.PosterUrl))
+                            {
+                                <img src="@movie.PosterUrl" class="w-100 h-100 object-fit-cover" alt="@movie.MovieName">
+                            }
+                            else
+                            {
+                                <div class="w-100 h-100 bg-secondary d-flex align-items-center justify-content-center">
+                                    <i class="fa-solid fa-film fa-3x text-muted"></i>
+                                </div>
+                            }
+                            <div class="position-absolute top-0 end-0 m-3">
+                                <span class="badge bg-dark bg-opacity-75 border border-secondary text-light">@movie.ReleaseDate?.ToString("MMM dd")</span>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-1 text-truncate">@movie.MovieName</h5>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .movie-card { transition: transform 0.3s ease; }
+        .movie-card:hover { transform: translateY(-8px); }
+        .movie-card img { transition: transform 0.5s ease; }
+        .movie-card:hover img { transform: scale(1.05); }
+        .btn-book-overlay { transition: opacity 0.3s ease, transform 0.3s ease; transform: translateY(10px); }
+        .movie-card:hover .btn-book-overlay { opacity: 1; transform: translateY(0); }
+    </style>
+}

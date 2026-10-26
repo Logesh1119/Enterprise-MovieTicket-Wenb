@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/SQL Database/">
+    <File Path="SQLDatabase.txt" />
+  </Folder>
+  <Project Path="MovieTicketApplication/MovieTicketApplication.csproj" />
+  <Project Path="MovieTicketBookingController/MovieTicketBookingController.csproj" />
+  <Project Path="MovieTicketDomain/MovieTicketDomain.csproj" />
+  <Project Path="MovieTicketInfrastructure/MovieTicketInfrastructure.csproj" />
+</Solution>

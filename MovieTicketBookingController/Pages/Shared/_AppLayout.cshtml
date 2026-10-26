@@ -1,0 +1,92 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1" />
+
+    <title>@ViewData["Title"] - MoviePlex</title>
+
+    <link rel="icon"
+          type="image/png"
+          href="~/uploads/UI/favicon.png" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet" />
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+
+    <!-- Global Site CSS -->
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+
+    <!-- Global -->
+    <link rel="stylesheet"
+          href="~/css/Layout/theme.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/css/Layout/layout.css"
+          asp-append-version="true" />
+
+    <!-- Components -->
+    <link rel="stylesheet"
+          href="~/css/Layout/navbar.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/css/Layout/breadcrumb.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/css/Layout/footer.css"
+          asp-append-version="true" />
+
+    @RenderSection("Styles", required: false)
+
+</head>
+
+<body>
+
+    <div class="mp-app">
+
+        <partial name="_Navigation" />
+
+        <partial name="_Breadcrumb" />
+
+        <main class="mp-page">
+
+            <div class="mp-container">
+
+                @RenderBody()
+
+            </div>
+
+        </main>
+
+        <partial name="_Footer" />
+
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    @RenderSection("Scripts", required: false)
+
+</body>
+
+</html>

@@ -1,0 +1,621 @@
+﻿@page "{id:int}"
+@model MovieTicketBooking.Pages.TheaterAdmin.Theater.DetailsModel
+
+@{
+    ViewData["Title"] = "Selected theater details";
+    ViewData["Parent"] = "Home > Theaters list";
+    Layout = "/Pages/Shared/_AppLayout.cshtml";
+
+    var primaryImg = Model.Theater?.ExistingImages?.FirstOrDefault(i => i.IsPrimary)?.FilePath
+                     ?? Model.Theater?.ExistingImages?.FirstOrDefault()?.FilePath
+                     ?? "/uploads/UI/no-image.png";
+
+    var fullAddress = string.Join(", ", new[] {
+        Model.Theater?.AddressLine1,
+        Model.Theater?.AddressLine2,
+        Model.Theater?.Area,
+        Model.Theater?.City,
+        Model.Theater?.State,
+        Model.Theater?.ZipCode
+    }.Where(s => !string.IsNullOrWhiteSpace(s)));
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Theater/TheaterListing.css" asp-append-version="true" />
+    <style>
+        .details-page {
+            width: 100%;
+            padding-bottom: 40px;
+        }
+
+        .details-header-card {
+            background: #ffffff;
+            border: 1px solid #E4E7EC;
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 32px;
+            box-shadow: 0 1px 3px rgba(16, 24, 40, 0.05);
+        }
+
+        .details-header-left {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .details-thumb {
+            width: 72px;
+            height: 72px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 1px solid #EAECF0;
+            flex-shrink: 0;
+        }
+
+        .details-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #101828;
+            margin: 0 0 6px 0;
+        }
+
+        .details-address {
+            font-size: 13.5px;
+            color: #475467;
+            margin: 0 0 14px 0;
+            line-height: 1.4;
+        }
+
+        .details-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .details-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #F8F9FA;
+            border: 1px solid #E9ECEF;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 12px;
+            color: #495057;
+            font-weight: 500;
+        }
+
+            .details-tag i {
+                font-size: 12px;
+                color: #6C757D;
+            }
+
+        .btn-edit-details {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 18px;
+            background: #ffffff;
+            border: 1px solid #D0D5DD;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #344054;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+            .btn-edit-details:hover {
+                background: #F9FAFB;
+                border-color: #98A2B3;
+                color: #101828;
+            }
+
+        /* Screen Listings Section */
+        .section-header {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #101828;
+            margin: 0 0 4px 0;
+        }
+
+        .section-subtitle {
+            font-size: 13.5px;
+            color: #475467;
+            margin: 0;
+        }
+
+        /* STATE 1: Empty State */
+        .screens-empty-card {
+            background: #F9FAFB;
+            border: 1px solid #EAECF0;
+            border-radius: 12px;
+            padding: 80px 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 420px;
+        }
+
+        .screens-empty-icon {
+            width: 72px;
+            height: 72px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: #667085;
+        }
+
+        .screens-empty-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #101828;
+            margin: 0 0 8px 0;
+        }
+
+        .screens-empty-text {
+            font-size: 14px;
+            color: #475467;
+            max-width: 400px;
+            margin: 0 0 24px 0;
+            line-height: 1.5;
+        }
+
+        .btn-add-screen-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #E53935;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 10px 24px;
+            border-radius: 24px;
+            border: none;
+            text-decoration: none;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(229, 57, 53, 0.2);
+            transition: all 0.2s ease;
+        }
+
+            .btn-add-screen-primary:hover {
+                background: #D32F2F;
+                color: #ffffff;
+                transform: translateY(-1px);
+            }
+
+        /* STATE 2: Screen Cards Grid */
+        .screens-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .screen-card {
+            background: #ffffff;
+            border: 1px solid #E4E7EC;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(16, 24, 40, 0.05);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+            .screen-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(16, 24, 40, 0.1);
+            }
+
+        .screen-card__header {
+            padding: 18px 20px 14px 20px;
+            border-bottom: 1px solid #F2F4F7;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .screen-card__title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #101828;
+            margin: 0;
+        }
+
+        .screen-card__badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+
+        .screen-card__badge--active {
+            background: #ECFDF3;
+            color: #027A48;
+        }
+
+        .screen-card__badge--inactive {
+            background: #FEF3F2;
+            color: #B42318;
+        }
+
+        .screen-card__body {
+            padding: 18px 20px;
+            flex: 1;
+        }
+
+        .screen-card__tech {
+            font-size: 13px;
+            font-weight: 600;
+            color: #E53935;
+            margin-bottom: 12px;
+        }
+
+        .screen-card__meta {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: #475467;
+            margin-bottom: 14px;
+        }
+
+        .screen-card__meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .screen-card__actions {
+            padding: 14px 20px;
+            background: #F9FAFB;
+            border-top: 1px solid #EAECF0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-card-action {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            border: 1px solid #D0D5DD;
+            background: #ffffff;
+            color: #344054;
+            transition: all 0.15s ease;
+        }
+
+            .btn-card-action:hover {
+                background: #F2F4F7;
+                color: #101828;
+            }
+
+        .btn-card-action--primary {
+            background: #E53935;
+            border-color: #E53935;
+            color: #ffffff;
+        }
+
+            .btn-card-action--primary:hover {
+                background: #D32F2F;
+                color: #ffffff;
+            }
+    </style>
+}
+
+<div class="details-page">
+
+    <!-- BREADCRUMB HEADER -->
+    <div class="details-header-card">
+
+        <div class="details-header-left">
+            <img src="@primaryImg" alt="@Model.Theater?.TheaterName" class="details-thumb" />
+
+            <div>
+                <h3 class="details-title">@Model.Theater?.TheaterName</h3>
+                <p class="details-address">@fullAddress</p>
+
+                <div class="details-tags">
+                    <span class="details-tag"><i class="fa-regular fa-circle-xmark"></i> Non-cancellable</span>
+                    <span class="details-tag"><i class="fa-solid fa-square-p"></i> Parking available</span>
+                    <span class="details-tag"><i class="fa-solid fa-utensils"></i> Foods & beverages</span>
+                    <span class="details-tag"><i class="fa-solid fa-wind"></i> Air conditioner</span>
+                    <span class="details-tag"><i class="fa-solid fa-compact-disc"></i> Dolby atmos</span>
+                    <span class="details-tag"><i class="fa-solid fa-train"></i> Metro nearby</span>
+                    <span class="details-tag"><i class="fa-solid fa-wheelchair"></i> Wheelchair accessible</span>
+                    <span class="details-tag"><i class="fa-solid fa-desktop"></i> IMAX</span>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="btn-edit-details" id="btnEditTheaterDetails">
+            <i class="fa-regular fa-pen-to-square"></i>
+            <span>Edit details</span>
+        </button>
+
+    </div>
+
+    <!-- SCREEN LISTINGS SECTION -->
+    <div class="section-header">
+        <h4 class="section-title">Screen listings</h4>
+        <p class="section-subtitle">Create and configure theatre screens with custom layouts and settings tailored to your cinema's needs.</p>
+    </div>
+
+    @if (!Model.Screens.Any())
+    {
+        <!-- STATE 1: NO SCREENS ADDED (FIGMA EXACT) -->
+        <div class="screens-empty-card">
+            <div class="screens-empty-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#667085" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4" />
+                    <path d="M2 11a1 1 0 0 1 1-1h18a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-3z" />
+                    <path d="M4 15v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4" />
+                    <path d="M16 15v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4" />
+                    <path d="M12 10v5" />
+                </svg>
+            </div>
+            <h4 class="screens-empty-title">No screens added yet</h4>
+            <p class="screens-empty-text">Please select the "Add screen" to add a new screen to this selected theatre</p>
+            <a asp-page="/TheaterAdmin/Screen/ScreenWizard"
+               asp-route-TheaterId="@Model.Theater?.TheaterId"
+               class="btn-add-screen-primary">
+                Add new screen
+            </a>
+        </div>
+    }
+    else
+    {
+        <!-- STATE 2: SCREENS EXIST -->
+        <div class="screens-grid">
+            @foreach (var screen in Model.Screens)
+            {
+                <div class="screen-card">
+
+                    <div class="screen-card__header">
+                        <h4 class="screen-card__title">@screen.ScreenName</h4>
+                        <span class="screen-card__badge @(screen.Status ? "screen-card__badge--active" : "screen-card__badge--inactive")">
+                            @(screen.Status ? "Active" : "Inactive")
+                        </span>
+                    </div>
+
+                    <div class="screen-card__body">
+                        <div class="screen-card__tech">
+                            @screen.ScreenType • @screen.AudioTechnology
+                        </div>
+
+                        <div class="screen-card__meta">
+                            <span class="screen-card__meta-item">
+                                <i class="fa-solid fa-layer-group text-muted"></i>
+                                @screen.TotalRows Rows
+                            </span>
+                            <span class="screen-card__meta-item">
+                                <i class="fa-solid fa-chair text-muted"></i>
+                                @screen.TotalSeats Seats
+                            </span>
+                            <span class="screen-card__meta-item">
+                                <i class="fa-solid fa-arrows-up-down text-muted"></i>
+                                @screen.Floor
+                            </span>
+                        </div>
+
+                        <div class="theater-card__amenities">
+                            @if (screen.Amenities.Any())
+                            {
+                                @foreach (var amenity in screen.Amenities)
+                                {
+                                    <span class="amenity-chip">
+                                        <i class="fa-solid fa-check amenity-chip__icon"></i>
+                                        @amenity
+                                    </span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="amenity-chip amenity-chip--empty">Standard Layout</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="screen-card__actions">
+                        <a asp-page="/TheaterAdmin/Screen/ScreenWizard"
+                           asp-route-TheaterId="@Model.Theater?.TheaterId"
+                           asp-route-ScreenId="@screen.ScreenId"
+                           asp-route-Step="2"
+                           class="btn-card-action btn-card-action--primary">
+                            Edit Screen Layout
+                        </a>
+                    </div>
+
+                </div>
+            }
+        </div>
+    }
+
+</div>
+
+<!-- SLIDE-OVER EDIT THEATER DRAWER -->
+<div class="drawer-overlay" id="editDrawerOverlay"></div>
+
+<div class="drawer" id="editTheaterDrawer" aria-modal="true" role="dialog">
+    <div class="drawer__header">
+        <div>
+            <h3 class="drawer__title">Edit theater details</h3>
+            <p class="drawer__subtitle">Update information for @Model.Theater?.TheaterName</p>
+        </div>
+        <button class="drawer__close" id="btnCloseEditDrawer" type="button"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="drawer__body">
+        <div class="drawer-success-banner" id="editSuccessBanner" style="display:none">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>Theater updated successfully!</span>
+        </div>
+
+        <form method="post" asp-page-handler="UpdateTheater" enctype="multipart/form-data" id="editTheaterForm" novalidate>
+            <input type="hidden" asp-for="EditTheater.TheaterId" />
+            <input type="hidden" asp-for="EditTheater.OwnerUserId" />
+
+            <div class="drawer-alert drawer-alert--danger" id="editErrorSummary" style="display:none"></div>
+
+            <div class="drawer-section">
+                <h6 class="drawer-section__label">Basic Information</h6>
+                <div class="drawer-fields">
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label class="drawer-field__label">Theater name</label>
+                            <input asp-for="EditTheater.TheaterName" class="drawer-field__input" />
+                        </div>
+                        <div class="drawer-field">
+                            <label class="drawer-field__label">Theater code</label>
+                            <input asp-for="EditTheater.TheaterCode" class="drawer-field__input" />
+                        </div>
+                    </div>
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label class="drawer-field__label">Theater brand</label>
+                            <input asp-for="EditTheater.TheaterBrand" class="drawer-field__input" />
+                        </div>
+                        <div class="drawer-field">
+                            <label class="drawer-field__label">Theater description</label>
+                            <input asp-for="EditTheater.TheaterDescription" class="drawer-field__input" />
+                        </div>
+                    </div>
+                    <div class="drawer-row drawer-row--single">
+                        <div class="drawer-field drawer-field--status">
+                            <label class="drawer-field__label">Status</label>
+                            <select asp-for="EditTheater.Status" class="drawer-field__select">
+                                <option value="true">Active</option>
+                                <option value="false">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="drawer-section">
+                <h6 class="drawer-section__label">Location Information</h6>
+                <div class="drawer-fields">
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label class="drawer-field__label">Address line 1</label>
+                            <input asp-for="EditTheater.AddressLine1" class="drawer-field__input" />
+                        </div>
+                        <div class="drawer-field">
+                            <label class="drawer-field__label">Address line 2</label>
+                            <input asp-for="EditTheater.AddressLine2" class="drawer-field__input" />
+                        </div>
+                    </div>
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label class="drawer-field__label">Area</label>
+                            <input asp-for="EditTheater.Area" class="drawer-field__input" />
+                        </div>
+                        <div class="drawer-field">
+                            <label class="drawer-field__label">City</label>
+                            <input asp-for="EditTheater.City" class="drawer-field__input" />
+                        </div>
+                    </div>
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label class="drawer-field__label">State</label>
+                            <input asp-for="EditTheater.State" class="drawer-field__input" />
+                        </div>
+                        <div class="drawer-field">
+                            <label class="drawer-field__label">Country</label>
+                            <input asp-for="EditTheater.Country" class="drawer-field__input" />
+                        </div>
+                    </div>
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label class="drawer-field__label">Zip Code</label>
+                            <input asp-for="EditTheater.ZipCode" class="drawer-field__input" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="drawer-section drawer-section--last">
+                <h6 class="drawer-section__label">Contact Information</h6>
+                <div class="drawer-fields">
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label class="drawer-field__label">Contact person</label>
+                            <input asp-for="EditTheater.ContactName" class="drawer-field__input" />
+                        </div>
+                        <div class="drawer-field">
+                            <label class="drawer-field__label">Contact number</label>
+                            <input asp-for="EditTheater.ContactPhone" class="drawer-field__input" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="drawer__footer">
+        <button type="button" class="drawer-btn drawer-btn--back" id="btnCloseEditBack">Cancel</button>
+        <button type="submit" form="editTheaterForm" class="drawer-btn drawer-btn--save" id="btnSaveEditTheater">Save Changes</button>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function() {
+            var $editDrawer = $('#editTheaterDrawer');
+            var $editOverlay = $('#editDrawerOverlay');
+
+            $('#btnEditTheaterDetails').on('click', function() {
+                $editDrawer.addClass('is-open');
+                $editOverlay.addClass('is-open');
+            });
+
+            function closeEditDrawer() {
+                $editDrawer.removeClass('is-open');
+                $editOverlay.removeClass('is-open');
+            }
+
+            $('#btnCloseEditDrawer, #btnCloseEditBack, #editDrawerOverlay').on('click', closeEditDrawer);
+
+            $('#editTheaterForm').on('submit', function(e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+
+                $.ajax({
+                    url: '?handler=UpdateTheater',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(res) {
+                        if (res && res.success) {
+                            $('#editSuccessBanner').fadeIn();
+                            setTimeout(function() {
+                                closeEditDrawer();
+                                location.reload();
+                            }, 1000);
+                        } else {
+                            alert('Failed to update theater.');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,279 @@
+@page
+@model MovieTicketBooking.Pages.TheaterAdmin.Screen.ScreenWizardModel
+
+@{
+    ViewData["Title"] = "Screen Configuration Wizard";
+    Layout = "/Pages/Shared/_AppLayout.cshtml";
+
+    var fullAddress = string.Join(", ", new[] {
+        Model.Theater?.AddressLine1,
+        Model.Theater?.Area,
+        Model.Theater?.City,
+        Model.Theater?.State
+    }.Where(s => !string.IsNullOrWhiteSpace(s)));
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/ScreenLayout/screen-wizard.css" asp-append-version="true" />
+}
+
+<div class="wizard-page">
+
+    <!-- HEADER BAR -->
+    <div class="wizard-header-bar">
+        <div>
+            <h2 class="wizard-header-title">Screen configuration</h2>
+            <p class="wizard-header-subtitle">Create and configure theatre screens with custom layouts and settings tailored to your cinema's needs.</p>
+        </div>
+
+        @if (Model.Theater != null)
+        {
+            var primaryImg = Model.Theater.ExistingImages?.FirstOrDefault(i => i.IsPrimary)?.FilePath 
+                             ?? Model.Theater.ExistingImages?.FirstOrDefault()?.FilePath 
+                             ?? "/uploads/UI/no-image.png";
+            <div class="theater-badge">
+                <img src="@primaryImg" alt="@Model.Theater.TheaterName" class="theater-badge__img" />
+                <div>
+                    <h5 class="theater-badge__name">@Model.Theater.TheaterName</h5>
+                    <p class="theater-badge__loc">@fullAddress</p>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- STEPPER PROGRESS BAR -->
+    <div class="wizard-stepper">
+        <div class="wizard-step-item active" data-step="1">
+            <div class="wizard-step-num">1</div>
+            <span class="wizard-step-label">Screen details</span>
+        </div>
+        <div class="wizard-step-divider"></div>
+
+        <div class="wizard-step-item" data-step="2">
+            <div class="wizard-step-num">2</div>
+            <span class="wizard-step-label">Configure seats</span>
+        </div>
+        <div class="wizard-step-divider"></div>
+
+        <div class="wizard-step-item" data-step="3">
+            <div class="wizard-step-num">3</div>
+            <span class="wizard-step-label">Allocate seats</span>
+        </div>
+        <div class="wizard-step-divider"></div>
+
+        <div class="wizard-step-item" data-step="4">
+            <div class="wizard-step-num">4</div>
+            <span class="wizard-step-label">Preview screen</span>
+        </div>
+    </div>
+
+    <!-- STEP 1 CONTAINER: SCREEN DETAILS -->
+    <div class="step-container active" id="step-1-container">
+        <div class="step-grid-2col">
+            <!-- Left: Form Specs -->
+            <div>
+                <div class="wizard-form-group">
+                    <label class="wizard-form-label">Screen name</label>
+                    <input type="text" id="txtScreenName" class="wizard-form-input" value="@Model.ScreenSpecs.ScreenName" placeholder="AUDI 01" />
+                </div>
+
+                <div class="wizard-form-group">
+                    <label class="wizard-form-label">Screen code</label>
+                    <input type="text" id="txtScreenCode" class="wizard-form-input" value="@Model.ScreenSpecs.ScreenCode" placeholder="SCR-001" />
+                </div>
+
+                <div class="wizard-form-group">
+                    <label class="wizard-form-label">Floor</label>
+                    <input type="text" id="txtFloor" class="wizard-form-input" value="@Model.ScreenSpecs.Floor" placeholder="2nd Floor" />
+                </div>
+
+                <div class="wizard-form-group">
+                    <label class="wizard-form-label">Screen type</label>
+                    <select id="ddlScreenType" class="wizard-form-select">
+                        @foreach (var type in Model.ScreenTypes)
+                        {
+                            if (Model.ScreenSpecs.ScreenType == type)
+                            {
+                                <option value="@type" selected>@type</option>
+                            }
+                            else
+                            {
+                                <option value="@type">@type</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="wizard-form-group">
+                    <label class="wizard-form-label">Audio technology</label>
+                    <select id="ddlAudioTechnology" class="wizard-form-select">
+                        @foreach (var audio in Model.AudioTechnologies)
+                        {
+                            if (Model.ScreenSpecs.AudioTechnology == audio)
+                            {
+                                <option value="@audio" selected>@audio</option>
+                            }
+                            else
+                            {
+                                <option value="@audio">@audio</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="wizard-form-group">
+                    <label class="wizard-form-label">Seating Type</label>
+                    <select id="ddlSeatingType" class="wizard-form-select">
+                        @foreach (var seatType in Model.SeatingTypes)
+                        {
+                            if (Model.ScreenSpecs.SeatingType == seatType)
+                            {
+                                <option value="@seatType" selected>@seatType</option>
+                            }
+                            else
+                            {
+                                <option value="@seatType">@seatType</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="wizard-form-group">
+                    <label class="wizard-form-label">Status</label>
+                    <select id="ddlStatus" class="wizard-form-select">
+                        <option value="true">Active</option>
+                        <option value="false">Inactive</option>
+                    </select>
+                </div>
+
+                <div class="wizard-form-group">
+                    <label class="wizard-form-label">Screen Amenities</label>
+                    <div class="amenity-chip-select">
+                        @foreach (var amen in Model.Amenities)
+                        {
+                            bool isSel = Model.ScreenSpecs.AmenId.Contains(amen.Id);
+                            <div class="amenity-chip-item @(isSel ? "selected" : "")" data-id="@amen.Id">
+                                <i class="fa-solid fa-check"></i>
+                                <span>@amen.AmenityName</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Screen Arch Banner Preview -->
+            <div>
+                <div class="screen-arch-container">
+                    <div class="screen-arch-line"></div>
+                    <span class="screen-arch-text">Screen this way</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="wizard-footer">
+            <button type="button" class="btn-wizard-nav btn-wizard-cancel">Cancel</button>
+            <button type="button" class="btn-wizard-nav btn-wizard-nav--primary" id="btnStep1Continue">Continue</button>
+        </div>
+    </div>
+
+    <!-- STEP 2 CONTAINER: CONFIGURE SEATS -->
+    <div class="step-container" id="step-2-container">
+        <div class="step-grid-2col">
+            <!-- Left: Add Row Form -->
+            <div>
+                <h5 class="fw-bold mb-3">Seat configuration settings</h5>
+                <p class="text-muted fs-6 mb-4">Here you can add seats quantity and walkway alignments.</p>
+
+                <div class="wizard-form-group">
+                    <label class="wizard-form-label">Row name</label>
+                    <input type="text" id="step2RowName" class="wizard-form-input" readonly />
+                </div>
+
+                <div class="wizard-form-group">
+                    <label class="wizard-form-label">Type</label>
+                    <select id="ddlStep2RowType" class="wizard-form-select">
+                        <option value="Seats">Seats</option>
+                        <option value="EmptyWalkway">Empty Walkway</option>
+                    </select>
+                </div>
+
+                <div class="wizard-form-group">
+                    <label class="wizard-form-label">Total number of seats</label>
+                    <input type="number" id="txtStep2Seats" class="wizard-form-input" placeholder="20" min="1" />
+                </div>
+
+                <div class="wizard-form-group">
+                    <label class="wizard-form-label">Total number of walkway</label>
+                    <input type="number" id="txtStep2Walkway" class="wizard-form-input" placeholder="4" min="0" />
+                </div>
+
+                <div class="d-flex gap-2 mt-4">
+                    <button type="button" class="btn-wizard-nav flex-1" onclick="$('#txtStep2Seats,#txtStep2Walkway').val('');">Clear</button>
+                    <button type="button" class="btn-wizard-nav btn-wizard-nav--primary flex-1" id="btnStep2AddRow">Submit</button>
+                </div>
+            </div>
+
+            <!-- Right: Seat Layout Canvas -->
+            <div>
+                <div class="screen-arch-container">
+                    <div class="screen-arch-line"></div>
+                    <span class="screen-arch-text">Screen this way</span>
+                </div>
+
+                <div id="step2LayoutContainer"></div>
+            </div>
+        </div>
+
+        <div class="wizard-footer">
+            <button type="button" class="btn-wizard-nav btn-wizard-cancel">Cancel</button>
+            <button type="button" class="btn-wizard-nav" id="btnStep2Back">Back</button>
+            <button type="button" class="btn-wizard-nav btn-wizard-nav--primary" id="btnStep2Continue">Continue</button>
+        </div>
+    </div>
+
+    <!-- STEP 3 CONTAINER: ALLOCATE SEATS -->
+    <div class="step-container" id="step-3-container">
+        <div class="screen-arch-container">
+            <div class="screen-arch-line"></div>
+            <span class="screen-arch-text">Screen this way</span>
+        </div>
+
+        <div id="step3CategoryContainer" style="max-width: 900px; margin: 0 auto;"></div>
+
+        <div class="wizard-footer">
+            <button type="button" class="btn-wizard-nav btn-wizard-cancel">Cancel</button>
+            <button type="button" class="btn-wizard-nav" id="btnStep3Back">Back</button>
+            <button type="button" class="btn-wizard-nav btn-wizard-nav--primary" id="btnStep3Continue">Continue</button>
+        </div>
+    </div>
+
+    <!-- STEP 4 CONTAINER: PREVIEW -->
+    <div class="step-container" id="step-4-container">
+        <div class="screen-arch-container">
+            <div class="screen-arch-line"></div>
+            <span class="screen-arch-text">Screen this way</span>
+        </div>
+
+        <div id="step4PreviewContainer" style="max-width: 900px; margin: 0 auto;"></div>
+
+        <div class="wizard-footer">
+            <button type="button" class="btn-wizard-nav" id="btnStep4Back">Back</button>
+            <button type="button" class="btn-wizard-nav btn-wizard-nav--primary" id="btnStep4Finish">Finish</button>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        window.serverWizardData = {
+            screenId: @(Model.ScreenId ?? 0),
+            theaterId: @Model.TheaterId,
+            initialStep: @Model.InitialStep,
+            specs: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ScreenSpecs)),
+            layout: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ExistingLayout ?? new MovieTicketBookingApplication.DTO_s.TheaterAdmin.Screen.ScreenLayoutDto { ScreenId = Model.ScreenId ?? 0 })),
+            categories: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.SeatCategories))
+        };
+    </script>
+    <script src="~/js/ScreenLayout/screen-wizard.js" asp-append-version="true"></script>
+}

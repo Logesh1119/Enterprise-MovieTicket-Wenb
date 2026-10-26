@@ -1,0 +1,109 @@
+﻿@page
+@model MovieTicketBooking.Pages.Customer.Booking.PaymentModel
+@{
+    ViewData["Title"] = "Payment";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <h2 class="fw-bold mb-4" style="font-family: 'Outfit', sans-serif;">Complete Payment</h2>
+            
+            @if (!ModelState.IsValid)
+            {
+                <div class="alert alert-danger rounded-4 border-0 mb-4 bg-danger bg-opacity-10 text-danger">
+                    <div asp-validation-summary="All" class="mb-0"></div>
+                </div>
+            }
+
+            <div class="card bg-dark border-secondary-subtle mb-4">
+                <div class="card-body p-4 p-md-5">
+                    <div class="d-flex justify-content-between align-items-center border-bottom border-secondary-subtle pb-4 mb-4">
+                        <span class="fs-5 text-muted">Amount Payable</span>
+                        <span class="fs-2 fw-bold text-white">&#8377;@Model.TotalAmount.ToString("0.00")</span>
+                    </div>
+
+                    <h5 class="fw-bold mb-3 text-white">Select Payment Method</h5>
+                    
+                    <form method="post" asp-page-handler="ProcessPayment" id="paymentForm">
+                        <input type="hidden" asp-for="ShowId" />
+                        <input type="hidden" asp-for="SeatIds" />
+                        <input type="hidden" asp-for="TotalAmount" />
+
+                        <div class="accordion accordion-flush bg-transparent mb-4" id="paymentAccordion">
+                            <!-- UPI Payment -->
+                            <div class="accordion-item bg-transparent border-secondary-subtle">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button bg-dark text-white shadow-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseUPI">
+                                        <i class="fa-brands fa-google-pay me-3 text-success fs-4"></i> UPI
+                                    </button>
+                                </h2>
+                                <div id="collapseUPI" class="accordion-collapse collapse" data-bs-parent="#paymentAccordion">
+                                    <div class="accordion-body bg-dark text-white pt-4">
+                                        <div class="mb-3">
+                                            <label class="form-label text-muted small">Enter UPI ID</label>
+                                            <input type="text" asp-for="UpiId" class="form-control bg-dark text-white border-secondary-subtle" placeholder="username@upi" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card Payment -->
+                            <div class="accordion-item bg-transparent border-secondary-subtle">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button bg-dark text-white shadow-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCard">
+                                        <i class="fa-regular fa-credit-card me-3 text-brand fs-4"></i> Credit / Debit Card
+                                    </button>
+                                </h2>
+                                <div id="collapseCard" class="accordion-collapse collapse" data-bs-parent="#paymentAccordion">
+                                    <div class="accordion-body bg-dark text-white pt-4">
+                                        <div class="mb-3">
+                                            <label class="form-label text-muted small">Card Number (Test Mode)</label>
+                                            <input type="text" asp-for="CardNumber" class="form-control bg-dark text-white border-secondary-subtle" placeholder="4111 1111 1111 1111" />
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6 mb-3">
+                                                <label class="form-label text-muted small">Expiry (MM/YY)</label>
+                                                <input type="text" asp-for="CardExpiry" class="form-control bg-dark text-white border-secondary-subtle" placeholder="12/25" />
+                                            </div>
+                                            <div class="col-6 mb-3">
+                                                <label class="form-label text-muted small">CVV</label>
+                                                <input type="password" asp-for="CardCvv" class="form-control bg-dark text-white border-secondary-subtle" placeholder="123" maxlength="3" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="processingMsg" class="d-none text-center mb-4">
+                            <div class="spinner-border text-brand mb-2" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="text-white mb-0">Processing Payment... Please do not refresh.</p>
+                        </div>
+
+                        <button type="submit" id="btnPay" class="btn btn-brand w-100 py-3 rounded-pill fw-bold fs-5 shadow-lg">
+                            Pay &#8377;@Model.TotalAmount.ToString("0.00")
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            $('#paymentForm').submit(function (e) {
+                if ($(this).valid()) {
+                    $('#btnPay').prop('disabled', true);
+                    $('#paymentAccordion').addClass('d-none');
+                    $('#processingMsg').removeClass('d-none');
+                }
+            });
+        });
+    </script>
+}

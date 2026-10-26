@@ -1,0 +1,431 @@
+@page
+@model MovieTicketBooking.Pages.TheaterAdmin.Theater.TheaterListModel
+
+@{
+    ViewData["Title"] = "Theater Listing";
+    ViewData["Parent"] = "Home";
+    Layout = "/Pages/Shared/_AppLayout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/Theater/TheaterListing.css"
+          asp-append-version="true" />
+}
+
+<div class="theater-page">
+
+    <!-- ========================================= -->
+    <!-- SUCCESS TOAST                              -->
+    <!-- ========================================= -->
+    <!-- ========================================= -->
+    <!-- PAGE HEADER                                -->
+    <!-- ========================================= -->
+
+    <div class="theater-page__header">
+
+        <div>
+            <h2 class="theater-page__title">Theaters list</h2>
+            <p class="theater-page__subtitle">
+                Here, you can manage all sales channel rules. Rules define which products are included or excluded per sales channel field.
+            </p>
+        </div>
+
+        <button id="btnOpenDrawer" class="btn-add-theater" type="button">
+            <i class="fa-solid fa-plus"></i>
+            <span>Add new theater</span>
+        </button>
+
+    </div>
+
+    <!-- ========================================= -->
+    <!-- TOOLBAR                                    -->
+    <!-- ========================================= -->
+
+    <div class="toolbar">
+
+        <div class="toolbar__left">
+
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text"
+                       id="theaterSearchInput"
+                       placeholder="Search" />
+            </div>
+
+            <button class="icon-button" type="button" title="Filter">
+                <i class="fa-solid fa-sliders"></i>
+            </button>
+
+        </div>
+
+        <div class="toolbar__right">
+            <span class="record-count">@Model.Theaters.Count Theater(s)</span>
+        </div>
+
+    </div>
+
+    <!-- ========================================= -->
+    <!-- CARD GRID                                  -->
+    <!-- ========================================= -->
+
+    <div class="theater-grid" id="theaterGrid">
+
+        @if (Model.Theaters.Any())
+        {
+            @foreach (var theater in Model.Theaters)
+            {
+                <div class="theater-card" data-name="@theater.TheaterName.ToLower()">
+
+                    <div class="theater-card__image">
+                        <img src="@(!string.IsNullOrWhiteSpace(theater.ImagePath)
+                                                                          ? theater.ImagePath
+                                                                          : "/uploads/UI/no-image.png")"
+                             alt="@theater.TheaterName" />
+                    </div>
+
+                    <div class="theater-card__content">
+
+                        <h4 class="theater-card__title">@theater.TheaterName</h4>
+
+                        <p class="theater-card__address">@theater.Address</p>
+
+                        <div class="theater-card__amenities">
+                            @if (theater.Amenities.Any())
+                            {
+                                @foreach (var amenity in theater.Amenities)
+                                {
+                                    <span class="amenity-chip">
+                                        <i class="fa-solid fa-check amenity-chip__icon"></i>
+                                        @amenity
+                                    </span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="amenity-chip amenity-chip--empty">No Amenities</span>
+                            }
+                        </div>
+
+                    </div>
+
+                    <div class="theater-card__actions">
+                        <button type="button"
+                                class="btn-edit-card"
+                                data-theater-id="@theater.TheaterId"
+                                data-theater-name="@theater.TheaterName"
+                                data-theater-code="@theater.TheaterCode"
+                                data-theater-brand="@theater.TheaterBrand"
+                                data-theater-description="@theater.Description"
+                                data-theater-status="@theater.Status.ToString().ToLower()"
+                                data-theater-address1="@theater.AddressLine1"
+                                data-theater-address2="@theater.AddressLine2"
+                                data-theater-area="@theater.Area"
+                                data-theater-city="@theater.City"
+                                data-theater-state="@theater.State"
+                                data-theater-country="@theater.Country"
+                                data-theater-zip="@theater.ZipCode"
+                                data-theater-contact-name="@theater.ContactName"
+                                data-theater-contact-phone="@theater.ContactPhone">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            Edit
+                        </button>
+                        <a asp-page="./Details"
+                           asp-route-id="@theater.TheaterId"
+                           class="btn-view">
+                            View details
+                        </a>
+                    </div>
+
+                </div>
+            }
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-state__icon">
+                    <i class="fa-solid fa-building-columns"></i>
+                </div>
+                <h4>No Theaters Found</h4>
+                <p>Click "Add new theater" to create your first theater.</p>
+                <button id="btnOpenDrawerEmpty" class="btn-add-theater" type="button">
+                    <i class="fa-solid fa-plus"></i>
+                    Add Theater
+                </button>
+            </div>
+        }
+
+    </div>
+
+</div>
+
+<!-- ========================================================= -->
+<!-- DRAWER OVERLAY                                            -->
+<!-- ========================================================= -->
+
+<div class="drawer-overlay" id="drawerOverlay"></div>
+
+<!-- ========================================================= -->
+<!-- SLIDE-OVER DRAWER                                         -->
+<!-- ========================================================= -->
+
+<div class="drawer" id="theaterDrawer" aria-modal="true" role="dialog" aria-label="Add new theater">
+
+    <!-- Drawer Header -->
+    <div class="drawer__header">
+        <div>
+            <h3 class="drawer__title" id="drawerTitle">Add new theater</h3>
+            <p class="drawer__subtitle" id="drawerSubtitle">Fill in the details to add a new theater</p>
+        </div>
+        <button class="drawer__close" id="btnCloseDrawer" type="button" aria-label="Close drawer">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <!-- Drawer Body -->
+    <div class="drawer__body">
+
+        <!-- Inline success banner (shown by JS after save) -->
+        <div class="drawer-success-banner" id="drawerSuccessBanner" style="display:none">
+            <i class="fa-solid fa-circle-check"></i>
+            <span id="drawerSuccessMsg">Theater saved successfully!</span>
+        </div>
+
+        <form method="post"
+              asp-page-handler="CreateTheaterAjax"
+              enctype="multipart/form-data"
+              id="drawerForm"
+              novalidate>
+
+            <!-- Hidden: TheaterId for edit mode (0 = create) -->
+            <input type="hidden" id="hdnTheaterId" name="NewTheater.TheaterId" value="0" />
+
+            <!-- JS-populated error summary -->
+            <div class="drawer-alert drawer-alert--danger" id="drawerErrorSummary" style="display:none"></div>
+
+            <!-- ─── IMAGE UPLOAD ──────────────────────────────────── -->
+            <div class="drawer-upload" id="drawerUploadZone">
+
+                <div class="drawer-upload__inner">
+                    <div class="drawer-upload__icon">
+                        <i class="fa-regular fa-image"></i>
+                    </div>
+
+                    <p class="drawer-upload__text">
+                        <label for="drawerImageInput" class="drawer-upload__link">Click to upload</label>
+                        &nbsp;or drag and drop
+                    </p>
+                    <p class="drawer-upload__hint">JPG, JPEG, PNG less than 1MB</p>
+
+                    <input type="file"
+                           asp-for="NewTheater.Images"
+                           id="drawerImageInput"
+                           multiple
+                           accept="image/*"
+                           class="drawer-upload__input" />
+                </div>
+
+                <!-- Preview strip -->
+                <div class="drawer-upload__previews" id="drawerPreviewStrip"></div>
+
+            </div>
+
+            <!-- ─── BASIC INFORMATION ────────────────────────────── -->
+            <div class="drawer-section">
+                <h6 class="drawer-section__label">Basic Information</h6>
+
+                <div class="drawer-fields">
+
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label asp-for="NewTheater.TheaterName" class="drawer-field__label">Theater name</label>
+                            <input asp-for="NewTheater.TheaterName"
+                                   class="drawer-field__input"
+                                   placeholder="PVR Hyper Mall" />
+                            <span asp-validation-for="NewTheater.TheaterName" class="drawer-field__error"></span>
+                        </div>
+
+                        <div class="drawer-field">
+                            <label asp-for="NewTheater.TheaterCode" class="drawer-field__label">Theater code</label>
+                            <input asp-for="NewTheater.TheaterCode"
+                                   class="drawer-field__input"
+                                   placeholder="15896577" />
+                            <span asp-validation-for="NewTheater.TheaterCode" class="drawer-field__error"></span>
+                        </div>
+                    </div>
+
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label asp-for="NewTheater.TheaterBrand" class="drawer-field__label">Theater brand</label>
+                            <input asp-for="NewTheater.TheaterBrand"
+                                   class="drawer-field__input"
+                                   placeholder="Priya Village Roadshow (PVR)" />
+                            <span asp-validation-for="NewTheater.TheaterBrand" class="drawer-field__error"></span>
+                        </div>
+
+                        <div class="drawer-field">
+                            <label asp-for="NewTheater.TheaterDescription" class="drawer-field__label">Theater description</label>
+                            <input asp-for="NewTheater.TheaterDescription"
+                                   class="drawer-field__input"
+                                   placeholder="158965" />
+                            <span asp-validation-for="NewTheater.TheaterDescription" class="drawer-field__error"></span>
+                        </div>
+                    </div>
+
+                    <div class="drawer-row drawer-row--single">
+                        <div class="drawer-field drawer-field--status">
+                            <label asp-for="NewTheater.Status" class="drawer-field__label">Status</label>
+                            <div class="drawer-select-wrapper">
+                                <span class="drawer-status-dot" id="statusDot"></span>
+                                <select asp-for="NewTheater.Status"
+                                        class="drawer-field__select"
+                                        id="statusSelect">
+                                    <option value="true">Active</option>
+                                    <option value="false">Inactive</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down drawer-select-arrow"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ─── LOCATION INFORMATION ─────────────────────────── -->
+            <div class="drawer-section">
+                <h6 class="drawer-section__label">Location Information</h6>
+
+                <div class="drawer-fields">
+
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label asp-for="NewTheater.AddressLine1" class="drawer-field__label">Address line 1</label>
+                            <input asp-for="NewTheater.AddressLine1"
+                                   class="drawer-field__input"
+                                   placeholder="PVR LTD, Hyper Mall, Kohinoor-2" />
+                            <span asp-validation-for="NewTheater.AddressLine1" class="drawer-field__error"></span>
+                        </div>
+
+                        <div class="drawer-field">
+                            <label asp-for="NewTheater.AddressLine2" class="drawer-field__label">Address line 2 (optional)</label>
+                            <input asp-for="NewTheater.AddressLine2"
+                                   class="drawer-field__input"
+                                   placeholder="Officers Line, 100 feet road" />
+                        </div>
+                    </div>
+
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label asp-for="NewTheater.Area" class="drawer-field__label">Area / Locality</label>
+                            <input asp-for="NewTheater.Area"
+                                   class="drawer-field__input"
+                                   placeholder="Velachery" />
+                            <span asp-validation-for="NewTheater.Area" class="drawer-field__error"></span>
+                        </div>
+
+                        <div class="drawer-field">
+                            <label asp-for="NewTheater.City" class="drawer-field__label">City</label>
+                            <input asp-for="NewTheater.City"
+                                   class="drawer-field__input"
+                                   placeholder="Chennai" />
+                            <span asp-validation-for="NewTheater.City" class="drawer-field__error"></span>
+                        </div>
+                    </div>
+
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label asp-for="NewTheater.State" class="drawer-field__label">State</label>
+                            <input asp-for="NewTheater.State"
+                                   class="drawer-field__input"
+                                   placeholder="Tamil Nadu" />
+                            <span asp-validation-for="NewTheater.State" class="drawer-field__error"></span>
+                        </div>
+
+                        <div class="drawer-field">
+                            <label asp-for="NewTheater.Country" class="drawer-field__label">Country</label>
+                            <div class="drawer-select-wrapper">
+                                <select asp-for="NewTheater.Country"
+                                        class="drawer-field__select drawer-field__select--country">
+                                    <option value="">Select country</option>
+                                    <option value="India">India</option>
+                                    <option value="United States">United States</option>
+                                    <option value="United Kingdom">United Kingdom</option>
+                                    <option value="Canada">Canada</option>
+                                    <option value="Australia">Australia</option>
+                                    <option value="Singapore">Singapore</option>
+                                    <option value="UAE">UAE</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down drawer-select-arrow"></i>
+                            </div>
+                            <span asp-validation-for="NewTheater.Country" class="drawer-field__error"></span>
+                        </div>
+                    </div>
+
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label asp-for="NewTheater.ZipCode" class="drawer-field__label">Zip / Postal code</label>
+                            <input asp-for="NewTheater.ZipCode"
+                                   class="drawer-field__input"
+                                   placeholder="600042" />
+                            <span asp-validation-for="NewTheater.ZipCode" class="drawer-field__error"></span>
+                        </div>
+                        <div class="drawer-field">
+                            <!-- spacer -->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ─── CONTACT INFORMATION ──────────────────────────── -->
+            <div class="drawer-section drawer-section--last">
+                <h6 class="drawer-section__label">Contact Information</h6>
+
+                <div class="drawer-fields">
+
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label asp-for="NewTheater.ContactName" class="drawer-field__label">Contact person</label>
+                            <input asp-for="NewTheater.ContactName"
+                                   class="drawer-field__input"
+                                   placeholder="Manoj Kumar" />
+                            <span asp-validation-for="NewTheater.ContactName" class="drawer-field__error"></span>
+                        </div>
+
+                        <div class="drawer-field">
+                            <label asp-for="NewTheater.ContactPhone" class="drawer-field__label">Contact number</label>
+                            <input asp-for="NewTheater.ContactPhone"
+                                   class="drawer-field__input"
+                                   placeholder="+91 1234567890" />
+                            <span asp-validation-for="NewTheater.ContactPhone" class="drawer-field__error"></span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </form>
+
+    </div>
+
+    <!-- Drawer Footer -->
+    <div class="drawer__footer">
+        <button type="button"
+                class="drawer-btn drawer-btn--back"
+                id="btnDrawerBack">
+            Back
+        </button>
+        <button type="submit"
+                form="drawerForm"
+                class="drawer-btn drawer-btn--save"
+                id="btnDrawerSave">
+            <span id="btnDrawerSaveLabel">Add new theater</span>
+        </button>
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/Theater/TheaterListing.js" asp-append-version="true"></script>
+}

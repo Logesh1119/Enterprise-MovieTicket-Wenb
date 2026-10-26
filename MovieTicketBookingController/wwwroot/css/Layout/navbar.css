@@ -1,0 +1,296 @@
+﻿/* ==========================================================
+   MOVIEPLEX NAVBAR
+========================================================== */
+
+.mp-navbar {
+    width: 100%;
+    height: 85px;
+    background: #ffffff;
+    border-bottom: 1px solid #ececec;
+    position: relative;
+    z-index: 1000;
+}
+
+.mp-navbar__container {
+    max-width: 1920px;
+    height: 58px;
+    margin: 10px auto;
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+}
+
+/* ==========================================================
+   LOGO
+========================================================== */
+
+.mp-navbar__brand {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    margin-right: 54px;
+}
+
+    .mp-navbar__brand img {
+        height: 28px;
+        width: auto;
+        display: block;
+        user-select: none;
+    }
+
+/* ==========================================================
+   MENU
+========================================================== */
+
+.mp-navbar__menu {
+    display: flex;
+    align-items: center;
+    gap: 34px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.mp-navbar__item {
+    display: flex;
+    align-items: center;
+    height: 58px;
+}
+
+.mp-navbar__link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 58px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    color: #575757;
+    transition: .25s;
+}
+
+    .mp-navbar__link:hover {
+        color: #E53935;
+    }
+
+    .mp-navbar__link::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: #E53935;
+        transition: .25s;
+    }
+
+    .mp-navbar__link:hover::after {
+        width: 100%;
+    }
+
+    .mp-navbar__link.active {
+        color: #E53935;
+        font-weight: 600;
+    }
+
+        .mp-navbar__link.active::after {
+            width: 100%;
+        }
+
+/* ==========================================================
+   RIGHT SIDE
+========================================================== */
+
+.mp-navbar__right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+/* ==========================================================
+   USER
+========================================================== */
+
+.mp-user {
+    position: relative;
+}
+
+.mp-user__button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 6px 0;
+}
+
+.mp-user__avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid #D8D8D8;
+    background: #F8F8F8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #808080;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.mp-user__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.1;
+}
+
+.mp-user__name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #202020;
+}
+
+.mp-user__company {
+    margin-top: 3px;
+    font-size: 11px;
+    color: #8A8A8A;
+}
+
+.mp-user__arrow {
+    color: #444;
+    font-size: 11px;
+    margin-left: 6px;
+}
+
+/* ==========================================================
+   DROPDOWN
+========================================================== */
+
+.mp-user__dropdown {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 10px);
+    width: 220px;
+    background: #ffffff;
+    border: 1px solid #E7E7E7;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0,0,0,.08);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: .25s;
+}
+
+.mp-user:hover .mp-user__dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.mp-user__dropdown a,
+.mp-user__dropdown button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border: none;
+    background: transparent;
+    text-decoration: none;
+    color: #444;
+    font-size: 13px;
+    cursor: pointer;
+    transition: .20s;
+}
+
+    .mp-user__dropdown a:hover,
+    .mp-user__dropdown button:hover {
+        background: #F8F8F8;
+    }
+
+.mp-user__divider {
+    width: 100%;
+    height: 1px;
+    background: #ECECEC;
+}
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width:1400px) {
+
+    .mp-navbar__menu {
+        gap: 24px;
+    }
+}
+
+@media (max-width:1200px) {
+
+    .mp-navbar__container {
+        padding: 0 18px;
+    }
+
+    .mp-navbar__menu {
+        gap: 18px;
+    }
+}
+
+@media (max-width:992px) {
+
+    .mp-navbar {
+        height: auto;
+    }
+
+    .mp-navbar__container {
+        flex-wrap: wrap;
+        height: auto;
+        padding: 15px;
+        row-gap: 15px;
+    }
+
+    .mp-navbar__menu {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+
+    .mp-navbar__right {
+        margin-left: auto;
+    }
+}
+
+@media (max-width:768px) {
+
+    .mp-user__company {
+        display: none;
+    }
+
+    .mp-navbar__brand {
+        margin-right: 20px;
+    }
+
+    .mp-navbar__menu {
+        gap: 12px;
+    }
+}
+
+@media (max-width:576px) {
+
+    .mp-navbar__menu {
+        justify-content: flex-start;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 8px;
+        scrollbar-width: none;
+    }
+
+        .mp-navbar__menu::-webkit-scrollbar {
+            display: none;
+        }
+}

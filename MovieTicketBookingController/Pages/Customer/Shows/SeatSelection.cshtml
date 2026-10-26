@@ -1,0 +1,183 @@
+@page "{id:int}"
+@model MovieTicketBooking.Pages.Customer.Shows.SeatSelectionModel
+@{
+    ViewData["Title"] = "Select Seats";
+}
+
+<div class="container py-4">
+    <!-- Header info -->
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary-subtle">
+        <div>
+            <h3 class="fw-bold text-white mb-1" style="font-family: 'Outfit', sans-serif;">@Model.Layout.MovieName</h3>
+            <p class="text-muted mb-0">@Model.Layout.TheaterName | @Model.Layout.ScreenName</p>
+            <p class="text-danger small fw-bold mb-0">@Model.Layout.ShowDate at @Model.Layout.ShowTime</p>
+        </div>
+        <div class="text-end">
+            <span class="badge border border-success text-success px-3 py-2 rounded-pill mb-2"><i class="fa-solid fa-check me-1"></i> Available</span>
+            <span class="badge border border-secondary text-secondary px-3 py-2 rounded-pill mb-2"><i class="fa-solid fa-ban me-1"></i> Booked</span>
+            <span class="badge bg-danger text-white px-3 py-2 rounded-pill mb-2">Selected</span>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Seat Map -->
+        <div class="col-lg-8">
+            <div class="bg-dark border border-secondary-subtle rounded-4 p-4 text-center overflow-auto">
+                <div class="screen-curve mx-auto mb-5">
+                    <span class="text-muted small text-uppercase tracking-wider">Screen this way</span>
+                </div>
+
+                <div class="seat-map d-inline-block text-start">
+                    @foreach (var row in Model.Layout.Rows)
+                    {
+                        if (row.RowType == "Walkway")
+                        {
+                            <div class="d-flex align-items-center mb-2" style="height: 30px;">
+                                <!-- empty space for row walkway -->
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="d-flex align-items-center justify-content-center mb-2 gap-2 flex-nowrap">
+                                <div class="text-muted fw-bold me-3" style="width: 25px;">@row.RowName</div>
+                                
+                                @foreach (var seat in row.Seats)
+                                {
+                                    if (seat.SeatType == "Walkway")
+                                    {
+                                        <div class="seat walkway" style="width: 32px; height: 32px;"></div>
+                                    }
+                                    else
+                                    {
+                                        var isBookedClass = seat.IsBooked ? "seat-booked" : "seat-available";
+                                        var disabledAttr = seat.IsBooked ? "disabled" : "";
+                                        
+                                        <button type="button" 
+                                                class="btn seat @isBookedClass p-0 d-flex align-items-center justify-content-center" 
+                                                data-seat-id="@seat.SeatId" 
+                                                data-price="@seat.Price"
+                                                data-label="@seat.SeatLabel"
+                                                data-category="@seat.CategoryName"
+                                                @disabledAttr
+                                                style="width: 32px; height: 32px; font-size: 0.75rem; border-radius: 6px;">
+                                            @seat.SeatNo
+                                        </button>
+                                    }
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="col-lg-4 mt-4 mt-lg-0">
+            <div class="card bg-dark border-secondary-subtle sticky-top" style="top: 100px;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4" style="font-family: 'Outfit', sans-serif;">Booking Summary</h5>
+                    
+                    <div class="alert bg-brand bg-opacity-10 text-brand border border-brand border-opacity-25 rounded-3 mb-4">
+                        <i class="fa-solid fa-ticket me-2"></i> <span id="seatCountMsg">Select @Model.Qty seats</span>
+                    </div>
+
+                    <div id="selectedSeatsContainer" class="mb-4">
+                        <p class="text-muted small mb-0">No seats selected.</p>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary-subtle mb-4">
+                        <span class="text-light">Total Amount</span>
+                        <span class="fs-4 fw-bold text-white" id="totalAmount">&#8377;0</span>
+                    </div>
+
+                    <form method="post" asp-page="/Customer/Booking/Summary">
+                        <input type="hidden" name="ShowId" value="@Model.Layout.ShowId" />
+                        <input type="hidden" id="SelectedSeatIds" name="SeatIds" value="" />
+                        <button type="submit" id="btnContinue" class="btn btn-brand w-100 py-3 rounded-pill fw-bold" disabled>Continue to Booking</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .screen-curve { width: 80%; height: 40px; border-top: 4px solid #3f3f46; border-radius: 50% 50% 0 0 / 100% 100% 0 0; position: relative; margin-top: 20px; }
+        .screen-curve span { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); letter-spacing: 3px; }
+        .seat { transition: all 0.2s; border: 1px solid transparent; }
+        .seat-available { background-color: #18181b; border-color: #10b981; color: #10b981; }
+        .seat-available:hover { background-color: #10b981; color: #fff; }
+        .seat-booked { background-color: #27272a; border-color: #3f3f46; color: #52525b; cursor: not-allowed; }
+        .seat.selected { background-color: #e11d48 !important; border-color: #e11d48 !important; color: #fff !important; transform: scale(1.1); }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            const requiredQty = parseInt('@Model.Qty');
+            let selectedSeats = [];
+            let totalAmount = 0;
+
+            $('.seat-available').click(function() {
+                const btn = $(this);
+                const id = btn.data('seat-id');
+                const price = parseFloat(btn.data('price'));
+                const label = btn.data('label');
+                const category = btn.data('category');
+
+                if (btn.hasClass('selected')) {
+                    btn.removeClass('selected');
+                    selectedSeats = selectedSeats.filter(s => s.id !== id);
+                    totalAmount -= price;
+                } else {
+                    if (selectedSeats.length >= requiredQty) {
+                        alert('You can only select exactly ' + requiredQty + ' seat(s).');
+                        return;
+                    }
+                    btn.addClass('selected');
+                    selectedSeats.push({ id, price, label, category });
+                    totalAmount += price;
+                }
+
+                updateSummary();
+            });
+
+            function updateSummary() {
+                $('#totalAmount').text('\u20B9' + totalAmount.toFixed(2));
+                
+                const container = $('#selectedSeatsContainer');
+                container.empty();
+
+                if (selectedSeats.length === 0) {
+                    container.append('<p class="text-muted small mb-0">No seats selected.</p>');
+                    $('#SelectedSeatIds').val('');
+                } else {
+                    let ids = [];
+                    selectedSeats.forEach(seat => {
+                        ids.push(seat.id);
+                        container.append(`
+                            <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary-subtle">
+                                <div>
+                                    <span class="text-white fw-bold me-2">${seat.label}</span>
+                                    <span class="badge bg-secondary" style="font-size: 0.6rem;">${seat.category}</span>
+                                </div>
+                                <span class="text-light small">\u20B9${seat.price.toFixed(2)}</span>
+                            </div>
+                        `);
+                    });
+                    $('#SelectedSeatIds').val(ids.join(','));
+                }
+
+                if (selectedSeats.length === requiredQty) {
+                    $('#seatCountMsg').html('<i class="fa-solid fa-check-circle me-1 text-success"></i> <span class="text-success">' + selectedSeats.length + ' of ' + requiredQty + ' seats selected</span>');
+                    $('#btnContinue').prop('disabled', false);
+                } else {
+                    $('#seatCountMsg').html('<i class="fa-solid fa-ticket me-2"></i> Select ' + (requiredQty - selectedSeats.length) + ' more seat(s)');
+                    $('#btnContinue').prop('disabled', true);
+                }
+            }
+        });
+    </script>
+}

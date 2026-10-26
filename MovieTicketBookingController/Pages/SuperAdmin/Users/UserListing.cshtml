@@ -1,0 +1,248 @@
+@page
+@model MovieTicketBooking.Pages.SuperAdmin.Users.UserListingModel
+@{
+    ViewData["Title"] = "System Users";
+    Layout = "/Pages/Shared/_AppLayout.cshtml";
+    ViewData["Parent"] = "Super Admin > Users";
+}
+
+<link rel="stylesheet" href="~/css/Theater/TheaterListing.css" asp-append-version="true" />
+<style>
+    .admin-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1rem;
+    }
+    .admin-card {
+        background: #fff;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        position: relative;
+    }
+    .admin-card__title { font-weight: 600; font-size: 1.1rem; margin-bottom: 0.5rem; }
+    .admin-card__email { color: #666; font-size: 0.9rem; margin-bottom: 0.5rem; }
+    .admin-card__status { font-size: 0.8rem; font-weight: 600; }
+    .status-active { color: #10b981; }
+    .status-inactive { color: #ef4444; }
+    .admin-card__actions { position: absolute; top: 1.5rem; right: 1.5rem; }
+</style>
+
+<div class="page-header">
+    <div class="page-header__left">
+        <h2 class="page-header__title">System Users</h2>
+        <p class="page-header__subtitle">Manage system users across all roles</p>
+    </div>
+    <div class="page-header__right">
+        <button type="button" class="btn-primary" id="btnOpenAddDrawer">
+            <i class="fa-solid fa-plus"></i> Add User
+        </button>
+    </div>
+</div>
+
+<div class="admin-grid">
+    @foreach(var user in Model.UsersList)
+    {
+        <div class="admin-card">
+            <h4 class="admin-card__title">@user.Username</h4>
+            <p class="admin-card__email"><i class="fa-regular fa-envelope"></i> @user.Email</p>
+            <p class="admin-card__email"><i class="fa-solid fa-user-shield"></i> @user.RoleName</p>
+            <p class="admin-card__status @(user.Status ? "status-active" : "status-inactive")">
+                <i class="fa-solid fa-circle"></i> @(user.Status ? "Active" : "Inactive")
+            </p>
+            <div class="admin-card__actions">
+                <button type="button" class="btn-edit-user" style="background: none; border: none; cursor: pointer; color: #4f46e5;"
+                        data-id="@user.Id"
+                        data-username="@user.Username"
+                        data-email="@user.Email"
+                        data-role-id="@user.RoleId"
+                        data-status="@user.Status.ToString().ToLower()">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Right Drawer -->
+<div class="mp-drawer-overlay" id="drawerOverlay"></div>
+<div class="mp-drawer" id="userDrawer">
+    <div class="drawer__header">
+        <div class="drawer__header-left">
+            <button type="button" class="drawer__close-btn" id="btnCloseDrawer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div>
+                <h3 class="drawer__title" id="drawerTitle">Add User</h3>
+                <p class="drawer__subtitle" id="drawerSubtitle">Create a new system user</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert / Banner -->
+    <div class="alert alert--success" id="successBanner" style="display: none; margin: 1rem;">
+        <i class="fa-solid fa-check-circle alert__icon"></i>
+        <div class="alert__content">
+            <h4 class="alert__title">Success</h4>
+            <p class="alert__message">User saved successfully!</p>
+        </div>
+    </div>
+
+    <!-- Error Banner -->
+    <div class="alert alert--error" id="errorBanner" style="display: none; margin: 1rem;">
+        <i class="fa-solid fa-triangle-exclamation alert__icon"></i>
+        <div class="alert__content">
+            <h4 class="alert__title">Error</h4>
+            <ul class="alert__list" id="errorList"></ul>
+        </div>
+    </div>
+
+    <form method="post" id="userForm">
+        <input type="hidden" id="hdnUserId" name="NewUser.Id" value="0" />
+        <div class="drawer__body">
+            
+            <div class="drawer-fields">
+                <div class="drawer-row">
+                    <div class="drawer-field">
+                        <label class="drawer-field__label">Username</label>
+                        <input name="NewUser.Username" id="NewUser_Username" class="drawer-field__input" />
+                    </div>
+                </div>
+                <div class="drawer-row">
+                    <div class="drawer-field">
+                        <label class="drawer-field__label">Email</label>
+                        <input name="NewUser.Email" id="NewUser_Email" type="email" class="drawer-field__input" />
+                    </div>
+                </div>
+                <div class="drawer-row">
+                    <div class="drawer-field">
+                        <label class="drawer-field__label">Role</label>
+                        <div class="drawer-select-wrapper">
+                            <select name="NewUser.RoleId" id="NewUser_RoleId" class="drawer-field__select">
+                                @foreach(var role in Model.Roles)
+                                {
+                                    <option value="@role.RoleId">@role.RoleName</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="drawer-row" id="passwordRow">
+                    <div class="drawer-field">
+                        <label class="drawer-field__label">Password</label>
+                        <input name="NewUser.Password" type="password" id="NewUser_Password" class="drawer-field__input" />
+                    </div>
+                </div>
+                <div class="drawer-row">
+                    <div class="drawer-field">
+                        <label class="drawer-field__label">Status</label>
+                        <div class="drawer-select-wrapper">
+                            <select name="NewUser.Status" id="NewUser_Status" class="drawer-field__select">
+                                <option value="true">Active</option>
+                                <option value="false">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="drawer__footer">
+            <button type="button" class="btn-secondary" id="btnCancelDrawer">Cancel</button>
+            <button type="submit" class="btn-primary" id="btnSaveUser">
+                <span class="btn-text">Save User</span>
+                <span class="spinner" style="display:none;"><i class="fa-solid fa-circle-notch fa-spin"></i></span>
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var $drawer = $('#userDrawer');
+            var $overlay = $('#drawerOverlay');
+            var $form = $('#userForm');
+
+            function openDrawer() {
+                $drawer.addClass('open');
+                $overlay.addClass('open');
+            }
+
+            function closeDrawer() {
+                $drawer.removeClass('open');
+                $overlay.removeClass('open');
+            }
+
+            $('#btnCloseDrawer, #btnCancelDrawer, #drawerOverlay').on('click', closeDrawer);
+
+            $('#btnOpenAddDrawer').on('click', function () {
+                $('#hdnUserId').val('0');
+                $('#drawerTitle').text('Add User');
+                $form.attr('action', '?handler=CreateUserAjax');
+                $form[0].reset();
+                $('#passwordRow').show();
+                openDrawer();
+            });
+
+            $('.btn-edit-user').on('click', function () {
+                var id = $(this).data('id');
+                var username = $(this).data('username');
+                var email = $(this).data('email');
+                var roleId = $(this).data('role-id');
+                var status = $(this).data('status');
+
+                $('#hdnUserId').val(id);
+                $('#drawerTitle').text('Edit User');
+                $form.attr('action', '?handler=UpdateUserAjax');
+                
+                $('#NewUser_Username').val(username);
+                $('#NewUser_Email').val(email);
+                $('#NewUser_RoleId').val(roleId);
+                $('#NewUser_Status').val(status === 'false' ? 'false' : 'true');
+
+                $('#passwordRow').hide();
+                openDrawer();
+            });
+
+            $form.on('submit', function (e) {
+                e.preventDefault();
+                $('#errorBanner').hide();
+                $('#btnSaveUser .spinner').show();
+                $('#btnSaveUser .btn-text').hide();
+
+                $.ajax({
+                    url: $form.attr('action'),
+                    type: 'POST',
+                    data: new FormData(this),
+                    processData: false,
+                    contentType: false,
+                    success: function (res) {
+                        $('#btnSaveUser .spinner').hide();
+                        $('#btnSaveUser .btn-text').show();
+
+                        if (res.success) {
+                            $('#successBanner').show();
+                            setTimeout(function(){ location.reload(); }, 1000);
+                        } else {
+                            $('#errorList').empty();
+                            for (var key in res.errors) {
+                                res.errors[key].forEach(function(msg) {
+                                    $('#errorList').append('<li>' + msg + '</li>');
+                                });
+                            }
+                            $('#errorBanner').show();
+                        }
+                    },
+                    error: function () {
+                        $('#btnSaveUser .spinner').hide();
+                        $('#btnSaveUser .btn-text').show();
+                        $('#errorList').html('<li>An unexpected error occurred.</li>');
+                        $('#errorBanner').show();
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,59 @@
+@page "{id:int}"
+@model MovieTicketBooking.Pages.Customer.Booking.ConfirmationModel
+@{
+    ViewData["Title"] = "Booking Confirmed";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 text-center">
+            
+            <div class="mb-4 d-inline-flex align-items-center justify-content-center bg-success bg-opacity-10 text-success rounded-circle" style="width: 100px; height: 100px;">
+                <i class="fa-solid fa-check fs-1"></i>
+            </div>
+            
+            <h2 class="fw-bold text-white mb-2" style="font-family: 'Outfit', sans-serif;">Booking Confirmed!</h2>
+            <p class="text-muted mb-5">Your booking ID is <span class="text-light fw-bold">#@Model.Summary.BookingId</span>.
+                @if (TempData["EmailSent"] != null && (bool)TempData["EmailSent"])
+                {
+                    <span>An email has been sent to your registered email address.</span>
+                }
+            </p>
+            
+            <div class="card bg-dark border-secondary-subtle text-start mx-auto shadow-lg" style="max-width: 450px;">
+                <div class="card-header border-bottom border-secondary-subtle bg-transparent p-4">
+                    <h5 class="fw-bold mb-1">@Model.Summary.MovieName</h5>
+                    <p class="text-muted small mb-0">@Model.Summary.TheaterName</p>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Date & Time</span>
+                        <span class="text-white fw-bold text-end">@Model.Summary.ShowDate.ToString("MMM dd, yyyy")<br>@Model.Summary.ShowTime.ToString(@"hh\:mm")</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Screen</span>
+                        <span class="text-white fw-bold">@Model.Summary.ScreenName</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Seats</span>
+                        <span class="text-white fw-bold">@string.Join(", ", Model.Summary.SeatLabels)</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Amount Paid</span>
+                        <span class="text-white fw-bold">&#8377;@Model.Summary.TotalAmount.ToString("0.00")</span>
+                    </div>
+                    <div class="text-center mt-4 pt-4 border-top border-secondary-subtle">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=BK-@Model.Summary.BookingId" class="img-fluid rounded bg-white p-2 mb-2" alt="QR Code" style="width: 150px;">
+                        <p class="small text-muted mb-0">Scan at the entrance</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-5 d-flex justify-content-center gap-3">
+                <a asp-page="/Customer/Home/Index" class="btn btn-outline-light rounded-pill px-4">Back to Home</a>
+                <a asp-page="/Customer/Booking/MyBookings" class="btn btn-brand rounded-pill px-4">View My Bookings</a>
+            </div>
+
+        </div>
+    </div>
+</div>

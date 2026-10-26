@@ -1,0 +1,136 @@
+@page
+@model MovieTicketBooking.Pages.TheaterAdmin.Show.ShowListingModel
+@{
+    ViewData["Title"] = "Show Management";
+    Layout = "/Pages/Shared/_AppLayout.cshtml";
+    ViewData["Parent"] = "Home > Shows list";
+}
+
+<link rel="stylesheet" href="~/css/Show/ShowListing.css" />
+
+<div class="show-management-container">
+    <div class="show-header">
+        <div class="show-title-group">
+            <h2>Shows list</h2>
+            <p>Create, organize and optimize shows across screens. Configure timings, language, format and pricing.</p>
+        </div>
+        <div class="theater-selector">
+            <select id="ddlTheater" class="form-control">
+                @foreach(var t in Model.Theaters) {
+                    var selected = Model.SelectedTheaterId == t.Id ? "selected" : "";
+                    <option value="@t.Id" selected="@selected">@t.Name</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="date-selector-container" id="dateSelector">
+        <!-- JS will populate 30 days starting from today -->
+    </div>
+
+    <div class="main-content">
+        <div class="left-panel">
+            <input type="text" id="txtScreenSearch" class="search-box" placeholder="Search screens..." />
+            <div class="screen-list" id="screenList">
+                <!-- JS will populate screens -->
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="right-header">
+                <div>
+                    <h3 style="margin:0;">Show list of selected screen</h3>
+                    <p style="margin:5px 0 0 0; color:#666; font-size:14px;">Here, you can manage shows based on the selection of screen from the left panel.</p>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="txtShowSearch" class="search-box" placeholder="Search shows..." style="margin-bottom:0;" />
+                    <button id="btnAddShow" class="btn-primary" style="white-space:nowrap;">+ Add new show</button>
+                </div>
+            </div>
+
+            <div class="show-list" id="showList">
+                <!-- JS will populate shows -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Drawer for Add/Edit Show -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<div class="drawer" id="showDrawer">
+    <div class="drawer-header">
+        <h3 id="drawerTitle">Add new show</h3>
+        <button id="btnCloseDrawer" style="background:none; border:none; font-size:24px; cursor:pointer;">&times;</button>
+    </div>
+    <div class="drawer-body">
+        <input type="hidden" id="hdnShowId" value="0" />
+        
+        <div class="form-group">
+            <label>Select Screen</label>
+            <select id="ddlShowScreen" class="form-control"></select>
+        </div>
+
+        <div class="form-group">
+            <label>Select Movie</label>
+            <select id="ddlShowMovie" class="form-control"></select>
+        </div>
+
+        <div class="form-group" style="display:flex; gap:10px;">
+            <div style="flex:1;">
+                <label>Language</label>
+                <select id="ddlLanguage" class="form-control">
+                    <option>English</option>
+                    <option>Hindi</option>
+                    <option>Tamil</option>
+                    <option>Telugu</option>
+                </select>
+            </div>
+            <div style="flex:1;">
+                <label>Format</label>
+                <select id="ddlFormat" class="form-control">
+                    <option>2D</option>
+                    <option>3D</option>
+                    <option>IMAX 3D</option>
+                    <option>4DX</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group" style="display:flex; gap:10px;">
+            <div style="flex:1;">
+                <label>Show Date</label>
+                <input type="date" id="txtShowDate" class="form-control" />
+            </div>
+            <div style="flex:1;">
+                <label>Show Time</label>
+                <input type="time" id="txtShowTime" class="form-control" />
+            </div>
+        </div>
+
+        <h4 style="margin:20px 0 10px 0;">Pricing Configuration</h4>
+        <div id="pricingContainer">
+            <!-- Dynamically populated based on screen categories -->
+        </div>
+
+        <div class="form-group" style="margin-top:20px;">
+            <label>Status</label>
+            <select id="ddlShowStatus" class="form-control">
+                <option value="Published">Published</option>
+                <option value="Draft">Draft</option>
+            </select>
+        </div>
+    </div>
+    <div class="drawer-footer">
+        <button id="btnCancelShow" class="btn-secondary">Cancel</button>
+        <button id="btnSaveShow" class="btn-primary">Save changes</button>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        window.AntiForgeToken = '@Html.AntiForgeryToken()'; 
+        // Note: we can also just rely on fetch headers if we pull token manually or ignore it.
+        // Actually, the PageModel doesn't have IgnoreAntiforgeryToken. We should add IgnoreAntiforgeryToken or pass token.
+    </script>
+    <script src="~/js/Show/ShowListing.js"></script>
+}

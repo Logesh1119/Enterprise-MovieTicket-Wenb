@@ -1,0 +1,32 @@
+
+.md-container { padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+.md-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.md-title h2 { margin: 0; font-size: 24px; font-weight: 600; }
+.md-title p { color: #666; margin: 5px 0 0 0; }
+.md-tabs { display: flex; gap: 20px; border-bottom: 1px solid #eee; margin-bottom: 20px; }
+.md-tab { padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; font-weight: 500; }
+.md-tab.active { border-bottom-color: #dc3545; color: #dc3545; }
+.md-content { display: none; }
+.md-content.active { display: block; }
+.md-controls { display: flex; justify-content: space-between; margin-bottom: 15px; }
+.search-box { width: 300px; padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
+.btn-primary { background: #dc3545; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 500; }
+.btn-secondary { background: #fff; color: #000; border: 1px solid #ddd; padding: 10px 20px; border-radius: 6px; cursor: pointer; }
+.md-table { width: 100%; border-collapse: collapse; }
+.md-table th, .md-table td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+.md-table th { font-weight: 600; color: #555; background: #f9f9f9; }
+.btn-edit, .btn-delete { background: none; border: none; cursor: pointer; font-size: 16px; margin-right: 10px; }
+.btn-edit { color: #1a73e8; }
+.btn-delete { color: #d93025; }
+.drawer { position: fixed; top: 0; right: -500px; width: 400px; height: 100vh; background: #fff; box-shadow: -2px 0 10px rgba(0,0,0,0.1); transition: right 0.3s ease; z-index: 1000; display: flex; flex-direction: column; }
+.drawer.is-open { right: 0; }
+.drawer-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+.drawer-body { padding: 20px; flex-grow: 1; overflow-y: auto; }
+.drawer-footer { padding: 20px; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 10px; }
+.drawer-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); z-index: 999; display: none; }
+.drawer-overlay.is-active { display: block; }
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
+.form-control { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
+.color-preview { display: inline-block; width: 20px; height: 20px; border-radius: 50%; vertical-align: middle; margin-right: 10px; }
+

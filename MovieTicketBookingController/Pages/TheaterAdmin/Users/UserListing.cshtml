@@ -1,0 +1,110 @@
+@page
+@model MovieTicketBooking.Pages.TheaterAdmin.Users.UserListingModel
+@{
+    ViewData["Title"] = "Users Management";
+    Layout = "/Pages/Shared/_AppLayout.cshtml";
+    ViewData["Parent"] = "Home > Users";
+}
+
+<link rel="stylesheet" href="~/css/Users/UserListing.css" />
+
+<div class="user-management-container">
+    <div class="user-header">
+        <div class="user-title">
+            <h2>Users list</h2>
+            <p>Manage application users, assign roles and control access.</p>
+        </div>
+        <button id="btnAddUser" class="btn-primary">+ Add new user</button>
+    </div>
+
+    <div class="user-controls">
+        <input type="text" id="txtSearch" class="search-box" placeholder="Search users by name or email..." />
+        <select id="ddlRoleFilter" class="filter-select">
+            <option value="">All Roles</option>
+            @foreach(var role in Model.Roles) {
+                <option value="@role.RoleId">@role.RoleName</option>
+            }
+        </select>
+    </div>
+
+    <table class="user-table">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Created At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="userTableBody">
+            <!-- Populated by JS -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Add/Edit Drawer -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<div class="drawer" id="userDrawer">
+    <div class="drawer-header">
+        <h3 id="drawerTitle">Add new user</h3>
+        <button id="btnCloseDrawer" style="background:none; border:none; font-size:24px; cursor:pointer;">&times;</button>
+    </div>
+    <div class="drawer-body">
+        <input type="hidden" id="hdnUserId" value="0" />
+        
+        <div class="form-group">
+            <label>Username *</label>
+            <input type="text" id="txtUsername" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label>Email *</label>
+            <input type="email" id="txtEmail" class="form-control" />
+        </div>
+
+        <div class="form-group" id="passwordGroup">
+            <label>Password *</label>
+            <input type="password" id="txtPassword" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label>Role *</label>
+            <select id="ddlRole" class="form-control">
+                @foreach(var role in Model.Roles) {
+                    <option value="@role.RoleId">@role.RoleName</option>
+                }
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Phone Number</label>
+            <input type="text" id="txtPhone" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label>Country</label>
+            <input type="text" id="txtCountry" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label>Status</label>
+            <select id="ddlStatus" class="form-control">
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+            </select>
+        </div>
+    </div>
+    <div class="drawer-footer">
+        <button id="btnCancel" class="btn-secondary">Cancel</button>
+        <button id="btnSave" class="btn-primary">Save changes</button>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        window.AntiForgeToken = '@Html.AntiForgeryToken()';
+    </script>
+    <script src="~/js/Users/UserListing.js"></script>
+}

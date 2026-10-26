@@ -1,0 +1,43 @@
+@page
+@model MovieTicketBooking.Pages.Customer.Theaters.IndexModel
+@{
+    ViewData["Title"] = "Theaters";
+}
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="fw-bold mb-1" style="font-family: 'Outfit', sans-serif;">Our Theaters</h1>
+            <p class="text-muted mb-0">Find a CineMax theater near you</p>
+        </div>
+    </div>
+
+    @if (!Model.Theaters.Any())
+    {
+        <div class="text-center py-5 text-muted">
+            <i class="fa-solid fa-building fa-3x mb-3"></i>
+            <h4>No theaters found</h4>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var theater in Model.Theaters)
+            {
+                <div class="col">
+                    <div class="card h-100 bg-dark border-secondary-subtle">
+                        <div class="card-body p-4 text-center">
+                            <div class="bg-gradient-danger text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3 shadow" style="width: 64px; height: 64px; background: linear-gradient(135deg, #e11d48, #be123c);">
+                                <i class="fa-solid fa-building fs-4"></i>
+                            </div>
+                            <h5 class="fw-bold text-white mb-2" style="font-family: 'Outfit', sans-serif;">@theater.TheaterName</h5>
+                            <p class="text-muted small mb-4"><i class="fa-solid fa-location-dot me-1"></i> @theater.Location</p>
+                            
+                            <a href="#" class="btn btn-outline-danger rounded-pill px-4">View Schedule</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

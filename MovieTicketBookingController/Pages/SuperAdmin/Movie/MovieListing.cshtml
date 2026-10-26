@@ -1,0 +1,402 @@
+@page
+@model MovieTicketBooking.Pages.SuperAdmin.Movie.MovieListingModel
+
+@{
+    ViewData["Title"] = "Movie Listing";
+    ViewData["Parent"] = "Home";
+    Layout = "/Pages/Shared/_AppLayout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Theater/TheaterListing.css" asp-append-version="true" />
+    <style>
+        /* Movie-specific card overrides */
+        .movie-poster {
+            width: 100%;
+            aspect-ratio: 2/3;
+            object-fit: cover;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .theater-card {
+            flex-direction: column;
+        }
+
+        .theater-card__image {
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .movie-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .movie-meta-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            font-weight: 500;
+            color: #667085;
+            background: #F9FAFB;
+            border: 1px solid #EAECF0;
+            border-radius: 20px;
+            padding: 3px 10px;
+        }
+
+        .movie-cert-badge {
+            display: inline-flex;
+            align-items: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: #fff;
+            background: #344054;
+            border-radius: 4px;
+            padding: 2px 8px;
+            letter-spacing: 0.04em;
+        }
+
+        .drawer-field__textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #D0D5DD;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #101828;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+            transition: border-color 0.15s;
+        }
+
+            .drawer-field__textarea:focus {
+                outline: none;
+                border-color: #667085;
+                box-shadow: 0 0 0 3px rgba(102,112,133,0.08);
+            }
+    </style>
+}
+
+<div class="theater-page">
+
+    <!-- PAGE HEADER -->
+    <div class="theater-page__header">
+        <div>
+            <h2 class="theater-page__title">Movies</h2>
+            <p class="theater-page__subtitle">
+                Manage all movies across your theaters. Add, edit and track movie listings.
+            </p>
+        </div>
+
+        <button id="btnOpenMovieDrawer" class="btn-add-theater" type="button">
+            <i class="fa-solid fa-plus"></i>
+            <span>Add new movie</span>
+        </button>
+    </div>
+
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+        <div class="toolbar__left">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="movieSearchInput" placeholder="Search movies..." />
+            </div>
+            <button class="icon-button" type="button" title="Filter">
+                <i class="fa-solid fa-sliders"></i>
+            </button>
+        </div>
+        <div class="toolbar__right">
+            <span class="record-count">@Model.Movies.Count Movie(s)</span>
+        </div>
+    </div>
+
+    <!-- MOVIE GRID -->
+    <div class="theater-grid" id="movieGrid">
+
+        @if (Model.Movies.Any())
+        {
+            @foreach (var movie in Model.Movies)
+            {
+                <div class="theater-card" data-name="@movie.MovieName.ToLower()">
+
+                    <div class="theater-card__image">
+                        <img src="@(!string.IsNullOrWhiteSpace(movie.ImagePath)
+                                                    ? movie.ImagePath
+                                                    : "/uploads/UI/no-image.png")"
+                             alt="@movie.MovieName"
+                             class="movie-poster" />
+                    </div>
+
+                    <div class="theater-card__content">
+
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px;">
+                            <h4 class="theater-card__title" style="margin:0;">@movie.MovieName</h4>
+                            @if (!string.IsNullOrWhiteSpace(movie.CertificateName))
+                            {
+                                <span class="movie-cert-badge">@movie.CertificateName</span>
+                            }
+                        </div>
+
+                        <div class="movie-meta">
+                            <span class="movie-meta-chip">
+                                <i class="fa-regular fa-clock"></i>
+                                @(movie.Duration / 60)h @(movie.Duration % 60)m
+                            </span>
+                            @if (movie.ReleaseDate.HasValue)
+                            {
+                                <span class="movie-meta-chip">
+                                    <i class="fa-regular fa-calendar"></i>
+                                    @movie.ReleaseDate.Value.ToString("MMM d, yyyy")
+                                </span>
+                            }
+                        </div>
+
+                        <div class="theater-card__amenities" style="margin-top:10px;">
+                            @if (movie.Genres.Any())
+                            {
+                                @foreach (var genre in movie.Genres.Take(3))
+                                {
+                                    <span class="amenity-chip">@genre</span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="amenity-chip amenity-chip--empty">No Genres</span>
+                            }
+                        </div>
+
+                    </div>
+
+                    <div class="theater-card__actions" style="display:flex; justify-content:space-between; align-items:center;">
+                        <span class="amenity-chip" style="@(movie.Status ? "background:#ECFDF3;color:#027A48;border-color:#ABEFC6;" : "")">
+                            @(movie.Status ? "Running" : "Upcoming")
+                        </span>
+                        <button type="button" class="btn-edit-movie" data-id="@movie.MovieId" style="padding:6px 12px; border:1px solid #D0D5DD; border-radius:8px; background:white; font-weight:600; color:#344054; font-size:12px; cursor:pointer;">
+                            Edit details
+                        </button>
+                    </div>
+
+                </div>
+            }
+        }
+        else
+        {
+            <div class="empty-state" style="grid-column: 1 / -1;">
+                <div class="empty-state__icon">
+                    <i class="fa-solid fa-film"></i>
+                </div>
+                <h4>No Movies Found</h4>
+                <p>Click "Add new movie" to add your first movie.</p>
+                <button id="btnOpenMovieDrawerEmpty" class="btn-add-theater" type="button">
+                    <i class="fa-solid fa-plus"></i>
+                    Add Movie
+                </button>
+            </div>
+        }
+
+    </div>
+
+</div>
+
+<!-- DRAWER OVERLAY -->
+<div class="drawer-overlay" id="movieDrawerOverlay"></div>
+
+<!-- MOVIE DRAWER -->
+<div class="drawer" id="movieDrawer" aria-modal="true" role="dialog" aria-label="Add new movie">
+
+    <!-- Drawer Header -->
+    <div class="drawer__header">
+        <div>
+            <h3 class="drawer__title" id="movieDrawerTitle">Add new movie</h3>
+            <p class="drawer__subtitle">Fill in the details to add a movie to your catalog</p>
+        </div>
+        <button class="drawer__close" id="btnCloseMovieDrawer" type="button" aria-label="Close drawer">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <!-- Drawer Body -->
+    <div class="drawer__body">
+
+        <div class="drawer-success-banner" id="movieDrawerSuccessBanner" style="display:none">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>Movie created successfully!</span>
+        </div>
+
+        <form method="post"
+              asp-page-handler="CreateMovieAjax"
+              enctype="multipart/form-data"
+              id="movieDrawerForm"
+              novalidate>
+
+            <div class="drawer-alert drawer-alert--danger" id="movieDrawerErrorSummary" style="display:none"></div>
+            
+            <input type="hidden" id="EditMovieId" name="EditMovieId" value="0" />
+
+            <!-- IMAGE UPLOAD -->
+            <div class="drawer-upload" id="movieUploadZone">
+                <div class="drawer-upload__inner">
+                    <div class="drawer-upload__icon">
+                        <i class="fa-regular fa-image"></i>
+                    </div>
+                    <p class="drawer-upload__text">
+                        <label for="movieImageInput" class="drawer-upload__link">Click to upload poster</label>
+                        &nbsp;or drag and drop
+                    </p>
+                    <p class="drawer-upload__hint">JPG, JPEG, PNG less than 2MB</p>
+                    <input type="file"
+                           asp-for="NewMovie.Images"
+                           id="movieImageInput"
+                           multiple
+                           accept="image/*"
+                           class="drawer-upload__input" />
+                </div>
+                <div class="drawer-upload__previews" id="moviePreviewStrip"></div>
+            </div>
+
+            <!-- BASIC INFORMATION -->
+            <div class="drawer-section">
+                <h6 class="drawer-section__label">Basic Information</h6>
+                <div class="drawer-fields">
+
+                    <div class="drawer-row drawer-row--single">
+                        <div class="drawer-field" style="flex:1;">
+                            <label asp-for="NewMovie.TheaterId" class="drawer-field__label">Theater</label>
+                            <div class="drawer-select-wrapper">
+                                <select asp-for="NewMovie.TheaterId" asp-items="Model.TheaterList" class="drawer-field__select">
+                                    <option value="">-- Select Theater --</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="NewMovie.TheaterId" class="drawer-field__error"></span>
+                        </div>
+                    </div>
+
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label asp-for="NewMovie.MovieName" class="drawer-field__label">Movie name</label>
+                            <input asp-for="NewMovie.MovieName" class="drawer-field__input" placeholder="The Dark Knight" />
+                            <span asp-validation-for="NewMovie.MovieName" class="drawer-field__error"></span>
+                        </div>
+                        <div class="drawer-field">
+                            <label asp-for="NewMovie.MovieCode" class="drawer-field__label">Movie code</label>
+                            <input asp-for="NewMovie.MovieCode" class="drawer-field__input" placeholder="TDK-2024" />
+                            <span asp-validation-for="NewMovie.MovieCode" class="drawer-field__error"></span>
+                        </div>
+                    </div>
+
+                    <div class="drawer-row drawer-row--single">
+                        <div class="drawer-field" style="flex:1;">
+                            <label asp-for="NewMovie.MovieDescription" class="drawer-field__label">Description</label>
+                            <textarea asp-for="NewMovie.MovieDescription"
+                                      class="drawer-field__textarea"
+                                      placeholder="A gripping tale of..."></textarea>
+                            <span asp-validation-for="NewMovie.MovieDescription" class="drawer-field__error"></span>
+                        </div>
+                    </div>
+
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label asp-for="NewMovie.Duration" class="drawer-field__label">Duration</label>
+                            <input asp-for="NewMovie.Duration" class="drawer-field__input" placeholder="2h 32m" />
+                        </div>
+                        <div class="drawer-field">
+                            <label asp-for="NewMovie.ReleaseDate" class="drawer-field__label">Release date</label>
+                            <input asp-for="NewMovie.ReleaseDate" type="date" class="drawer-field__input" />
+                        </div>
+                    </div>
+
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label asp-for="NewMovie.CertificateId" class="drawer-field__label">Certificate</label>
+                            <div class="drawer-select-wrapper">
+                                <select asp-for="NewMovie.CertificateId" class="drawer-field__select">
+                                    <option value="">Select certificate</option>
+                                    @foreach (var cert in Model.Certificates)
+                                    {
+                                        <option value="@cert.Id">@cert.CertificateName</option>
+                                    }
+                                </select>
+                                <i class="fa-solid fa-chevron-down drawer-select-arrow"></i>
+                            </div>
+                            <span asp-validation-for="NewMovie.CertificateId" class="drawer-field__error"></span>
+                        </div>
+                        <div class="drawer-field">
+                            <label asp-for="NewMovie.Status" class="drawer-field__label">Status</label>
+                            <div class="drawer-select-wrapper">
+                                <select asp-for="NewMovie.Status" class="drawer-field__select">
+                                    <option value="true">Running</option>
+                                    <option value="false">Upcoming</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down drawer-select-arrow"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="drawer-row">
+                        <div class="drawer-field" style="flex:1;">
+                            <label asp-for="NewMovie.Tags" class="drawer-field__label">Tags</label>
+                            <input asp-for="NewMovie.Tags" class="drawer-field__input" placeholder="action, thriller" />
+                            <span asp-validation-for="NewMovie.Tags" class="drawer-field__error"></span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- GENRES -->
+            <div class="drawer-section">
+                <h6 class="drawer-section__label">Genres</h6>
+                <div class="amenity-chip-select" id="genreChipContainer">
+                    @foreach (var genre in Model.Genres)
+                    {
+                        <div class="amenity-chip-item" data-id="@genre.Id">
+                            <i class="fa-solid fa-check"></i>
+                            <span>@genre.GenreName</span>
+                        </div>
+                    }
+                </div>
+                <!-- Hidden inputs for genres (populated by JS) -->
+                <div id="genreHiddenInputs"></div>
+            </div>
+
+            <!-- MEDIA LINKS -->
+            <div class="drawer-section drawer-section--last">
+                <h6 class="drawer-section__label">Media Links</h6>
+                <div class="drawer-fields">
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label asp-for="NewMovie.TrailerUrl" class="drawer-field__label">Trailer URL</label>
+                            <input asp-for="NewMovie.TrailerUrl" class="drawer-field__input" placeholder="https://youtube.com/..." />
+                        </div>
+                        <div class="drawer-field">
+                            <label asp-for="NewMovie.TeaserUrl" class="drawer-field__label">Teaser URL</label>
+                            <input asp-for="NewMovie.TeaserUrl" class="drawer-field__input" placeholder="https://youtube.com/..." />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+
+    </div>
+
+    <!-- Drawer Footer -->
+    <div class="drawer__footer">
+        <button type="button" class="drawer-btn drawer-btn--back" id="btnMovieDrawerBack">Back</button>
+        <button type="submit"
+                form="movieDrawerForm"
+                class="drawer-btn drawer-btn--save"
+                id="btnMovieDrawerSave">
+            <span id="btnMovieDrawerSaveLabel">Add new movie</span>
+        </button>
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/Theater/MovieListing.js" asp-append-version="true"></script>
+}

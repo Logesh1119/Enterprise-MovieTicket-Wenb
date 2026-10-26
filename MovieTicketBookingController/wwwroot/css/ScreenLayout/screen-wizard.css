@@ -1,0 +1,401 @@
+﻿/* ===========================================================
+   SINGLE-PAGE SCREEN CONFIGURATION WIZARD STYLES (FIGMA MATCH)
+=========================================================== */
+
+.wizard-page {
+    width: 100%;
+    padding-bottom: 60px;
+    background: #FAFAFA;
+}
+
+/* Header & Location Badge */
+.wizard-header-bar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.wizard-header-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #101828;
+    margin: 0 0 4px 0;
+}
+
+.wizard-header-subtitle {
+    font-size: 13.5px;
+    color: #475467;
+    margin: 0;
+}
+
+.theater-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #ffffff;
+    border: 1px solid #EAECF0;
+    padding: 8px 16px 8px 10px;
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+}
+
+.theater-badge__img {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.theater-badge__name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #101828;
+    margin: 0;
+}
+
+.theater-badge__loc {
+    font-size: 12px;
+    color: #667085;
+    margin: 0;
+}
+
+/* Stepper Bar */
+.wizard-stepper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 36px;
+    position: relative;
+    max-width: 800px;
+}
+
+.wizard-step-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    z-index: 2;
+    background: #FAFAFA;
+    padding-right: 16px;
+}
+
+.wizard-step-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #EAECF0;
+    color: #667085;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+}
+
+.wizard-step-item.active .wizard-step-num {
+    background: #E53935;
+    color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(229, 57, 53, 0.15);
+}
+
+.wizard-step-item.completed .wizard-step-num {
+    background: #027A48;
+    color: #ffffff;
+}
+
+.wizard-step-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #667085;
+}
+
+.wizard-step-item.active .wizard-step-label {
+    color: #101828;
+    font-weight: 600;
+}
+
+.wizard-step-divider {
+    flex: 1;
+    height: 2px;
+    background: #EAECF0;
+    margin: 0 12px 0 0;
+}
+
+/* Curved Arch Screen Banner ("Screen this way") */
+.screen-arch-container {
+    width: 100%;
+    margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.screen-arch-line {
+    width: 85%;
+    height: 24px;
+    border-top: 3px solid #D0D5DD;
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    margin-bottom: 8px;
+}
+
+.screen-arch-text {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: #667085;
+    letter-spacing: 0.5px;
+}
+
+/* Step Layout Panels */
+.step-container {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+    .step-container.active {
+        display: block;
+    }
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.step-grid-2col {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 40px;
+}
+
+/* Step 1 Form Controls */
+.wizard-form-group {
+    margin-bottom: 20px;
+}
+
+.wizard-form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #344054;
+    margin-bottom: 6px;
+}
+
+.wizard-form-input, .wizard-form-select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #D0D5DD;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #101828;
+    background: #ffffff;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+    .wizard-form-input:focus, .wizard-form-select:focus {
+        border-color: #E53935;
+        box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1);
+    }
+
+.amenity-chip-select {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.amenity-chip-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border: 1px solid #D0D5DD;
+    border-radius: 20px;
+    font-size: 12.5px;
+    color: #344054;
+    background: #ffffff;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s;
+}
+
+    .amenity-chip-item.selected {
+        background: #FEF2F2;
+        border-color: #E53935;
+        color: #E53935;
+        font-weight: 600;
+    }
+
+/* Footer Action Bar */
+.wizard-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid #EAECF0;
+}
+
+.btn-wizard-nav {
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid #D0D5DD;
+    background: #ffffff;
+    color: #344054;
+}
+
+    .btn-wizard-nav:hover {
+        background: #F9FAFB;
+        color: #101828;
+    }
+
+.btn-wizard-nav--primary {
+    background: #E53935;
+    border-color: #E53935;
+    color: #ffffff;
+}
+
+    .btn-wizard-nav--primary:hover {
+        background: #D32F2F;
+        color: #ffffff;
+    }
+
+/* Step 2 Seat Config Grid & Cards */
+.seat-config-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ffffff;
+    border: 1px solid #EAECF0;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+}
+
+.seat-row-label {
+    font-size: 15px;
+    font-weight: 700;
+    color: #101828;
+    min-width: 40px;
+}
+
+.seat-row-items {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    flex: 1;
+    margin: 0 20px;
+}
+
+.seat-box-item {
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    border: 1px solid #D0D5DD;
+    background: #F9FAFB;
+    font-size: 12px;
+    font-weight: 600;
+    color: #344054;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.15s;
+}
+
+    .seat-box-item.selected {
+        background: #E53935;
+        border-color: #E53935;
+        color: #ffffff;
+    }
+
+    .seat-box-item.is-walkway {
+        background: transparent;
+        border: 1px dashed transparent;
+        color: transparent;
+        pointer-events: none;
+    }
+
+.row-actions-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-row-action {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid #EAECF0;
+    background: #ffffff;
+    color: #475467;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+    .btn-row-action:hover {
+        background: #F2F4F7;
+        color: #101828;
+    }
+
+.btn-row-action--confirm {
+    background: #ECFDF3;
+    border-color: #A6F4C5;
+    color: #027A48;
+}
+
+    .btn-row-action--confirm:hover {
+        background: #D1FADF;
+    }
+
+/* Step 3 Category Selectors */
+.category-row-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ffffff;
+    border: 1px solid #EAECF0;
+    border-radius: 10px;
+    padding: 16px 24px;
+    margin-bottom: 14px;
+}
+
+.category-select-dropdown {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid #D0D5DD;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #344054;
+    background: #ffffff;
+    outline: none;
+    min-width: 180px;
+}
+
+.category-badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-size: 12.5px;
+    font-weight: 600;
+    background: #EFF8FF;
+    color: #175CD3;
+}

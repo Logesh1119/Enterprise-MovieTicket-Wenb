@@ -1,0 +1,95 @@
+@page
+@model MovieTicketBooking.Pages.Customer.Movies.IndexModel
+@{
+    ViewData["Title"] = "Movies";
+}
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="fw-bold mb-1" style="font-family: 'Outfit', sans-serif;">Explore Movies</h1>
+            <p class="text-muted mb-0">Discover the best movies playing near you</p>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-md-8 mx-auto">
+            <form method="get" class="d-flex gap-2 p-2 bg-dark rounded-pill border border-secondary-subtle align-items-center">
+                <i class="fa-solid fa-search text-muted ms-3"></i>
+                <input type="text" asp-for="SearchTerm" class="form-control border-0 bg-transparent text-white shadow-none" placeholder="Search for movies...">
+                
+                <div class="vr bg-secondary mx-2"></div>
+                
+                <select asp-for="Genre" class="form-select border-0 bg-transparent text-white shadow-none w-auto">
+                    <option value="">All Genres</option>
+                    <option value="Action">Action</option>
+                    <option value="Adventure">Adventure</option>
+                    <option value="Comedy">Comedy</option>
+                    <option value="Drama">Drama</option>
+                    <option value="Sci-Fi">Sci-Fi</option>
+                    <option value="Thriller">Thriller</option>
+                    <option value="Horror">Horror</option>
+                    <option value="Animation">Animation</option>
+                </select>
+                
+                <button type="submit" class="btn btn-brand rounded-pill px-4 ms-2">Search</button>
+            </form>
+        </div>
+    </div>
+
+    @if (!Model.Movies.Any())
+    {
+        <div class="text-center py-5 text-muted">
+            <i class="fa-solid fa-film fa-3x mb-3"></i>
+            <h4>No movies found</h4>
+            <p>Try adjusting your search filters.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            @foreach (var movie in Model.Movies)
+            {
+                <div class="col">
+                    <a asp-page="/Customer/Movies/Details" asp-route-id="@movie.Id" class="text-decoration-none">
+                        <div class="card h-100 border-0 bg-transparent text-white movie-card">
+                            <div class="position-relative overflow-hidden rounded-4 mb-3" style="aspect-ratio: 2/3;">
+                                @if (!string.IsNullOrEmpty(movie.PosterUrl))
+                                {
+                                    <img src="@movie.PosterUrl" class="w-100 h-100 object-fit-cover" alt="@movie.MovieName">
+                                }
+                                else
+                                {
+                                    <div class="w-100 h-100 bg-secondary d-flex align-items-center justify-content-center">
+                                        <i class="fa-solid fa-film fa-3x text-muted"></i>
+                                    </div>
+                                }
+                                <div class="position-absolute top-0 end-0 m-3">
+                                    <span class="badge bg-dark bg-opacity-75 border border-secondary text-light">@movie.CertificateName</span>
+                                </div>
+                                <div class="card-overlay position-absolute bottom-0 w-100 p-3" style="background: linear-gradient(transparent, rgba(0,0,0,0.9));">
+                                    <span class="btn btn-danger btn-sm w-100 rounded-pill opacity-0 btn-book-overlay">Book Tickets</span>
+                                </div>
+                            </div>
+                            <h5 class="fw-bold mb-1 text-truncate">@movie.MovieName</h5>
+                            <p class="text-muted small mb-0"><i class="fa-regular fa-clock me-1"></i> @movie.Duration mins</p>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section Styles {
+    <style>
+        .movie-card { transition: transform 0.3s ease; }
+        .movie-card:hover { transform: translateY(-8px); }
+        .movie-card img { transition: transform 0.5s ease; }
+        .movie-card:hover img { transform: scale(1.05); }
+        .btn-book-overlay { transition: opacity 0.3s ease, transform 0.3s ease; transform: translateY(10px); }
+        .movie-card:hover .btn-book-overlay { opacity: 1; transform: translateY(0); }
+        
+        select option { background-color: #09090b; color: #fff; }
+    </style>
+}

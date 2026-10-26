@@ -1,0 +1,102 @@
+@page
+@model MovieTicketBooking.Pages.TheaterAdmin.MasterData.MasterDataListingModel
+@{
+    ViewData["Title"] = "Master Data";
+    Layout = "/Pages/Shared/_AppLayout.cshtml";
+    ViewData["Parent"] = "Home > Master Data";
+}
+
+<link rel="stylesheet" href="~/css/MasterData/MasterDataListing.css" />
+
+<div class="md-container">
+    <div class="md-header">
+        <div class="md-title">
+            <h2>Master Data</h2>
+            <p>Manage common lookup values used across the application.</p>
+        </div>
+    </div>
+
+    <div class="md-tabs">
+        <div class="md-tab active" data-target="genres">Genres</div>
+        <div class="md-tab" data-target="seatcategories">Seat Categories</div>
+        <div class="md-tab" data-target="amenities">Amenities</div>
+        <div class="md-tab" data-target="certificates">Certificates</div>
+    </div>
+
+    <div class="md-content active" id="genres">
+        <div class="md-controls">
+            <input type="text" class="search-box" data-table="tblGenres" placeholder="Search Genres..." />
+            <button class="btn-primary btn-add" data-type="Genre">+ Add Genre</button>
+        </div>
+        <table class="md-table" id="tblGenres">
+            <thead><tr><th>ID</th><th>Name</th><th>Actions</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="md-content" id="seatcategories">
+        <div class="md-controls">
+            <input type="text" class="search-box" data-table="tblSeatCats" placeholder="Search Categories..." />
+            <button class="btn-primary btn-add" data-type="SeatCategory">+ Add Category</button>
+        </div>
+        <table class="md-table" id="tblSeatCats">
+            <thead><tr><th>ID</th><th>Name</th><th>Color</th><th>Actions</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="md-content" id="amenities">
+        <div class="md-controls">
+            <input type="text" class="search-box" data-table="tblAmenities" placeholder="Search Amenities..." />
+            <button class="btn-primary btn-add" data-type="Amenity">+ Add Amenity</button>
+        </div>
+        <table class="md-table" id="tblAmenities">
+            <thead><tr><th>ID</th><th>Name</th><th>Actions</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="md-content" id="certificates">
+        <div class="md-controls">
+            <input type="text" class="search-box" data-table="tblCertificates" placeholder="Search Certificates..." />
+            <button class="btn-primary btn-add" data-type="Certificate">+ Add Certificate</button>
+        </div>
+        <table class="md-table" id="tblCertificates">
+            <thead><tr><th>ID</th><th>Name</th><th>Actions</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<div class="drawer-overlay" id="mdOverlay"></div>
+<div class="drawer" id="mdDrawer">
+    <div class="drawer-header">
+        <h3 id="drawerTitle">Add</h3>
+        <button id="btnCloseDrawer" style="background:none; border:none; font-size:24px; cursor:pointer;">&times;</button>
+    </div>
+    <div class="drawer-body">
+        <input type="hidden" id="hdnId" value="0" />
+        <input type="hidden" id="hdnType" value="" />
+        
+        <div class="form-group">
+            <label>Name *</label>
+            <input type="text" id="txtName" class="form-control" />
+        </div>
+
+        <div class="form-group" id="grpColor" style="display:none;">
+            <label>Color Code (Hex) *</label>
+            <input type="color" id="txtColor" class="form-control" style="padding:0; height:40px;" />
+        </div>
+    </div>
+    <div class="drawer-footer">
+        <button id="btnCancel" class="btn-secondary">Cancel</button>
+        <button id="btnSave" class="btn-primary">Save</button>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        window.AntiForgeToken = '@Html.AntiForgeryToken()';
+    </script>
+    <script src="~/js/MasterData/MasterDataListing.js"></script>
+}

@@ -1,0 +1,147 @@
+﻿.wizard-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 13px;
+}
+
+.circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #dcdcdc;
+    color: black;
+    font-weight: bold;
+}
+
+.wizard-step.active .circle {
+    background: #0d6efd;
+    color: white;
+}
+
+.wizard-line {
+    width: 90px;
+    height: 3px;
+    background: #dcdcdc;
+    margin: 0 15px;
+}
+
+.row-card {
+    border: 1px solid #d8d8d8;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.row-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.seat-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.seat {
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
+    background: #ffffff;
+    border: 1px solid #0d6efd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.walkway {
+    background: #d9d9d9;
+    color: red;
+    border: none;
+    font-weight: bold;
+}
+
+.row-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.empty-row {
+    background: #f7f7f7;
+    text-align: center;
+    padding: 15px;
+    border-radius: 8px;
+    font-weight: 600;
+    color: #777;
+}
+
+.seat.selecting {
+    border: 2px solid #0d6efd;
+}
+
+.seat.locked {
+    cursor: not-allowed;
+    opacity: .85;
+}
+
+.seat:hover {
+    transform: scale(1.05);
+    transition: .2s;
+}
+
+.seat-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.seat-box {
+    width: 42px;
+    height: 42px;
+    border: 1px solid #999;
+    background: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+    .seat-box:hover {
+        background: #f3f3f3;
+    }
+
+.walkway {
+    background: #dc3545;
+    color: #fff;
+    border: none;
+}
+
+.selected-seat {
+    background: #dc3545;
+    color: #fff;
+    border: none;
+}
+
+.empty-walkway-row {
+    height: 45px;
+    border: 2px dashed #bdbdbd;
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #888;
+    font-weight: 600;
+}
+
+.seat-aisle {
+    height: 42px;
+    margin: 0 10px;
+}

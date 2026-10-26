@@ -1,0 +1,227 @@
+@{
+    var currentPath = Context.Request.Path.Value?.ToLower() ?? "";
+
+    string Active(params string[] routes)
+    {
+        foreach (var route in routes)
+        {
+            if (currentPath.StartsWith(route.ToLower()))
+            {
+                return "active";
+            }
+        }
+
+        return "";
+    }
+
+    var userName = User?.Identity?.IsAuthenticated == true
+        ? User.Identity!.Name
+        : "Deepika P";
+
+    var company = "PVR Cinemas Limited";
+}
+
+<nav class="mp-navbar">
+
+    <div class="mp-navbar__container">
+
+        <!-- Logo -->
+
+        <a asp-page="/Index" class="mp-navbar__brand">
+
+            <img src="~/uploads/UI/Movieplex_logo logo.png"
+                 asp-append-version="true"
+                 alt="MoviePlex" />
+
+        </a>
+
+        <!-- Navigation -->
+
+        <ul class="mp-navbar__menu">
+
+            @if (User.IsInRole("SuperAdmin"))
+            {
+                <li class="mp-navbar__item">
+                    <a asp-page="/SuperAdmin/Dashboard/Index"
+                       class="mp-navbar__link @Active("/superadmin/dashboard")">
+                        Dashboard
+                    </a>
+                </li>
+                <li class="mp-navbar__item">
+                    <a asp-page="/SuperAdmin/Theater/TheaterListing"
+                       class="mp-navbar__link @Active("/superadmin/theater")">
+                        Theaters
+                    </a>
+                </li>
+
+                <li class="mp-navbar__item">
+                    <a asp-page="/SuperAdmin/Movie/MovieListing"
+                       class="mp-navbar__link @Active("/superadmin/movie")">
+                        Movies
+                    </a>
+                </li>
+                <li class="mp-navbar__item">
+                    <a asp-page="/SuperAdmin/Show/ShowListing"
+                       class="mp-navbar__link @Active("/superadmin/show")">
+                        Shows
+                    </a>
+                </li>
+                <li class="mp-navbar__item">
+                    <a asp-page="/SuperAdmin/Users/UserListing"
+                       class="mp-navbar__link @Active("/superadmin/users")">
+                        Users
+                    </a>
+                </li>
+                <li class="mp-navbar__item">
+                    <a asp-page="/SuperAdmin/MasterData/MasterDataListing"
+                       class="mp-navbar__link @Active("/superadmin/masterdata")">
+                        Master Data
+                    </a>
+                </li>
+                <li class="mp-navbar__item">
+                    <a asp-page="/SuperAdmin/Settings/Settings"
+                       class="mp-navbar__link @Active("/superadmin/settings")">
+                        Settings
+                    </a>
+                </li>
+            }
+
+            @if (User.IsInRole("TheaterAdmin"))
+            {
+                <li class="mp-navbar__item">
+                    <a asp-page="/TheaterAdmin/Dashboard/Index"
+                       class="mp-navbar__link @Active("/theateradmin/dashboard")">
+                        Dashboard
+                    </a>
+                </li>
+
+                <li class="mp-navbar__item">
+                    <a asp-page="/TheaterAdmin/Theater/TheaterListing"
+                       class="mp-navbar__link @Active("/theateradmin/theater")">
+                        Theaters
+                    </a>
+                </li>
+
+                <li class="mp-navbar__item">
+                    <a asp-page="/TheaterAdmin/Movie/MovieListing"
+                       class="mp-navbar__link @Active("/theateradmin/movie")">
+                        Movies
+                    </a>
+                </li>
+
+                <li class="mp-navbar__item">
+                    <a asp-page="/TheaterAdmin/Screen/ScreenListing"
+                       class="mp-navbar__link @Active("/theateradmin/screen")">
+                        Screens
+                    </a>
+                </li>
+
+                <li class="mp-navbar__item">
+                    <a asp-page="/TheaterAdmin/Show/ShowListing"
+                       class="mp-navbar__link @Active("/theateradmin/show")">
+                        Shows
+                    </a>
+                </li>
+
+                <li class="mp-navbar__item">
+                    <a asp-page="/TheaterAdmin/Users/UserListing"
+                       class="mp-navbar__link @Active("/theateradmin/users")">
+                        Users
+                    </a>
+                </li>
+
+                <li class="mp-navbar__item">
+                    <a asp-page="/TheaterAdmin/MasterData/MasterDataListing"
+                       class="mp-navbar__link @Active("/theateradmin/masterdata")">
+                        Master data
+                    </a>
+                </li>
+
+                <li class="mp-navbar__item">
+                    <a asp-page="/TheaterAdmin/Settings/Settings"
+                       class="mp-navbar__link @Active("/theateradmin/settings")">
+                        Settings
+                    </a>
+                </li>
+            }
+
+        </ul>
+
+        <!-- Right Section -->
+
+        <div class="mp-navbar__right">
+
+            <div class="mp-user">
+
+                <button type="button"
+                        class="mp-user__button">
+
+                    <span class="mp-user__avatar">
+
+                        <i class="fa-solid fa-user"></i>
+
+                    </span>
+
+                    <span class="mp-user__content">
+
+                        <span class="mp-user__name">
+                            @userName
+                        </span>
+
+                        <span class="mp-user__company">
+                            @company
+                        </span>
+
+                    </span>
+
+                    <span class="mp-user__arrow">
+
+                        <i class="fa-solid fa-chevron-down"></i>
+
+                    </span>
+
+                </button>
+
+                <div class="mp-user__dropdown">
+
+                    <a asp-page="/Profile/Index">
+
+                        <i class="fa-regular fa-user"></i>
+
+                        <span>My Profile</span>
+
+                    </a>
+
+                    <a asp-page="/Settings/Index">
+
+                        <i class="fa-solid fa-gear"></i>
+
+                        <span>Settings</span>
+
+                    </a>
+
+                    <div class="mp-user__divider"></div>
+
+                    <form method="post"
+                          asp-page="/Account/Login"
+                          asp-page-handler="Logout">
+
+                        <button type="submit">
+
+                            <i class="fa-solid fa-right-from-bracket"></i>
+
+                            <span>Logout</span>
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</nav>

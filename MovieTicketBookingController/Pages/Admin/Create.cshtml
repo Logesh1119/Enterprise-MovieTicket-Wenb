@@ -1,0 +1,65 @@
+@page
+@model MovieTicketBooking.Pages.Admin.TheaterAdmin.CreateModel
+
+<h2>Create Theater Admin</h2>
+
+<form method="post" enctype="multipart/form-data">
+
+    <div class="mb-3">
+        <label>Profile Image</label>
+        <input asp-for="TheaterAdmin.ProfileImage"
+               type="file"
+               class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Username</label>
+        <input asp-for="TheaterAdmin.Username"
+               class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Email</label>
+        <input asp-for="TheaterAdmin.Email"
+               class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Phone Number</label>
+        <input asp-for="TheaterAdmin.PhoneNumber"
+               class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Country</label>
+        <input asp-for="TheaterAdmin.Country"
+               class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Password</label>
+        <input asp-for="TheaterAdmin.Password"
+               type="password"
+               class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Confirm Password</label>
+        <input asp-for="TheaterAdmin.ConfirmPassword"
+               type="password"
+               class="form-control" />
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="TheaterAdmin.Status"
+               class="form-check-input" />
+        <label class="form-check-label">
+            Active
+        </label>
+    </div>
+
+    <button class="btn btn-primary">
+        Create Theater Admin
+    </button>
+
+</form>

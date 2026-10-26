@@ -1,0 +1,71 @@
+@page
+@model MovieTicketBooking.Pages.Customer.Booking.SummaryModel
+@{
+    ViewData["Title"] = "Booking Summary";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h2 class="fw-bold mb-4" style="font-family: 'Outfit', sans-serif;">Booking Summary</h2>
+            
+            @if (!ModelState.IsValid)
+            {
+                <div class="alert alert-danger rounded-4 border-0 mb-4 bg-danger bg-opacity-10 text-danger">
+                    <div asp-validation-summary="All" class="mb-0"></div>
+                </div>
+            }
+            
+            <div class="card bg-dark border-secondary-subtle mb-4">
+                <div class="card-body p-4 p-md-5">
+                    <div class="row border-bottom border-secondary-subtle pb-4 mb-4">
+                        <div class="col-md-8">
+                            <h4 class="fw-bold text-white mb-2" style="font-family: 'Outfit', sans-serif;">@Model.ShowDetails?.MovieName</h4>
+                            <p class="text-muted mb-1"><i class="fa-solid fa-location-dot me-2"></i>@Model.ShowDetails?.TheaterName</p>
+                            <p class="text-muted mb-0"><i class="fa-solid fa-screen-users me-2"></i>@Model.ShowDetails?.ScreenName</p>
+                        </div>
+                        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                            <div class="bg-secondary bg-opacity-25 rounded-3 d-inline-block px-4 py-2 text-center border border-secondary-subtle">
+                                <div class="text-danger small fw-bold text-uppercase tracking-wider">@Model.ShowDetails?.ShowDate</div>
+                                <div class="fs-4 fw-bold text-white" style="font-family: 'Outfit', sans-serif;">@Model.ShowDetails?.ShowTime</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold mb-3 text-white">Tickets (@Model.SelectedSeats.Count)</h5>
+                    <div class="mb-4">
+                        @foreach (var seat in Model.SelectedSeats)
+                        {
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <span class="text-white fw-bold me-2">@seat.SeatLabel</span>
+                                    <span class="badge bg-secondary">@seat.CategoryName</span>
+                                </div>
+                                <span class="text-light">&#8377;@seat.Price.ToString("0.00")</span>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center pt-4 border-top border-secondary-subtle mb-5">
+                        <span class="fs-5 text-muted">Sub Total</span>
+                        <span class="fs-5 text-white">&#8377;@Model.TotalAmount.ToString("0.00")</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center pt-4 border-top border-secondary-subtle mb-5 bg-danger bg-opacity-10 p-3 rounded-3 border border-danger border-opacity-25">
+                        <span class="fs-4 fw-bold text-white">Amount Payable</span>
+                        <span class="fs-3 fw-bold text-danger" style="font-family: 'Outfit', sans-serif;">&#8377;@Model.TotalAmount.ToString("0.00")</span>
+                    </div>
+
+                    <form method="post" asp-page="/Customer/Booking/Payment">
+                        <input type="hidden" asp-for="ShowId" />
+                        <input type="hidden" asp-for="SeatIds" />
+                        <button type="submit" class="btn btn-brand w-100 py-3 rounded-pill fw-bold fs-5 shadow-lg">Proceed to Payment</button>
+                    </form>
+                    <div class="text-center mt-3">
+                        <small class="text-muted"><i class="fa-solid fa-lock me-1"></i> Payments are 100% secure and encrypted.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

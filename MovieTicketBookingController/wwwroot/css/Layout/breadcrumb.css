@@ -1,0 +1,74 @@
+﻿/*==========================================================
+    BREADCRUMB
+==========================================================*/
+
+.mp-breadcrumb {
+    position: relative;
+    height: 42px;
+    border-bottom: 1px solid #ececec;
+    overflow: hidden;
+    background: #fafafa;
+}
+
+    .mp-breadcrumb::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: url('/uploads/UI/BackGround Image.png');
+        background-position: center;
+        opacity: 0.02;
+        z-index: 0;
+    }
+
+.mp-breadcrumb__container {
+    position: relative;
+    z-index: 1;
+    max-width: 1920px;
+    height: 42px;
+    margin: 5px;
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+}
+
+.mp-breadcrumb__list {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.mp-breadcrumb__item {
+    font-size: 12px;
+    font-weight: 500;
+    color: #8c8c8c;
+}
+
+    .mp-breadcrumb__item a {
+        color: inherit;
+        text-decoration: none;
+        transition: .2s;
+    }
+
+        .mp-breadcrumb__item a:hover {
+            color: #e53935;
+        }
+
+    .mp-breadcrumb__item.active {
+        color: #e53935;
+        font-weight: 600;
+    }
+
+.mp-breadcrumb__separator {
+    font-size: 10px;
+    color: #c4c4c4;
+}
+
+@media(max-width:768px) {
+
+    .mp-breadcrumb__container {
+        padding: 0 16px;
+    }
+}

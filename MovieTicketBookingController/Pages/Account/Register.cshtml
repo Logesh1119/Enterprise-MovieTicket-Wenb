@@ -1,0 +1,62 @@
+@page
+@model MovieTicketBooking.Pages.Account.RegisterModel
+
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Create an account";
+}
+
+<div class="auth-container">
+    <!-- MoviePlex Official Logo Centered Above Card -->
+    <div class="auth-logo-container">
+        <img src="~/uploads/UI/Movieplex_logo logo.png" alt="MoviePlex Logo" class="auth-logo" />
+    </div>
+
+    <!-- White Authentication Card -->
+    <div class="auth-card">
+        <h2 class="auth-title">Create an account</h2>
+        <p class="auth-subtitle">Please enter your details to sign up.</p>
+
+        @* Validation Summary *@
+        <div asp-validation-summary="ModelOnly" class="auth-field-validation" style="color: red; margin-bottom: 15px;"></div>
+
+        <!-- Registration Form -->
+        <form method="post">
+            
+            <!-- Username Input -->
+            <div class="auth-floating-group">
+                <label>Username</label>
+                <input asp-for="Register.Username" type="text" class="auth-input" placeholder="e.g. John Doe" required />
+                <span asp-validation-for="Register.Username" class="auth-field-validation" style="color: red;"></span>
+            </div>
+
+            <!-- Email Address Field -->
+            <div class="auth-floating-group">
+                <label>Email address</label>
+                <input asp-for="Register.Email" type="email" class="auth-input" placeholder="e.g. john@example.com" required />
+                <span asp-validation-for="Register.Email" class="auth-field-validation" style="color: red;"></span>
+            </div>
+
+            <!-- Password Input -->
+            <div class="auth-floating-group">
+                <label>Password</label>
+                <input asp-for="Register.Password" type="password" id="registerPassword" class="auth-input" placeholder="••••••••••••" required />
+                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('registerPassword', this)" aria-label="Toggle password visibility">
+                    <i class="fa-regular fa-eye"></i>
+                </button>
+                <span asp-validation-for="Register.Password" class="auth-field-validation" style="color: red;"></span>
+            </div>
+
+            <!-- Primary Submit Button -->
+            <button type="submit" class="btn btn-auth-primary" style="margin-top: 8px;">Register</button>
+            
+            <div style="text-align: center; margin-top: 15px;">
+                <p class="auth-subtitle">Already have an account? <a href="/Account/Login" style="color: #4F46E5; text-decoration: none; font-weight: 500;">Log in</a></p>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

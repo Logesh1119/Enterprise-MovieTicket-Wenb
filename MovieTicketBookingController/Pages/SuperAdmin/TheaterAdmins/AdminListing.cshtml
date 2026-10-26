@@ -1,0 +1,279 @@
+@page
+@model MovieTicketBooking.Pages.SuperAdmin.TheaterAdmins.AdminListingModel
+@{
+    ViewData["Title"] = "Theater Admins";
+    Layout = "/Pages/Shared/_AppLayout.cshtml";
+    ViewData["Parent"] = "Super Admin > Theater Admins";
+}
+
+<link rel="stylesheet" href="~/css/Theater/TheaterListing.css" asp-append-version="true" />
+<style>
+    .admin-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1rem;
+    }
+    .admin-card {
+        background: #fff;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        position: relative;
+    }
+    .admin-card__title { font-weight: 600; font-size: 1.1rem; margin-bottom: 0.5rem; }
+    .admin-card__email { color: #666; font-size: 0.9rem; margin-bottom: 0.5rem; }
+    .admin-card__status { font-size: 0.8rem; font-weight: 600; }
+    .status-active { color: #10b981; }
+    .status-inactive { color: #ef4444; }
+    .admin-card__actions { position: absolute; top: 1.5rem; right: 1.5rem; }
+</style>
+
+<div class="page-header">
+    <div class="page-header__left">
+        <h2 class="page-header__title">Theater Admins</h2>
+        <p class="page-header__subtitle">Manage theater owners and administrators</p>
+    </div>
+    <div class="page-header__right">
+        <button type="button" class="btn-primary" id="btnOpenAddAdminDrawer">
+            <i class="fa-solid fa-plus"></i> Add Theater Admin
+        </button>
+    </div>
+</div>
+
+<div class="admin-grid">
+    @foreach(var admin in Model.TheaterAdmins)
+    {
+        <div class="admin-card">
+            <h4 class="admin-card__title">@admin.Username</h4>
+            <p class="admin-card__email"><i class="fa-regular fa-envelope"></i> @admin.Email</p>
+            <p class="admin-card__email"><i class="fa-regular fa-clock"></i> Joined: @admin.CreatedAt.ToString("MMM dd, yyyy")</p>
+            <p class="admin-card__status @(admin.Status ? "status-active" : "status-inactive")">
+                <i class="fa-solid fa-circle"></i> @(admin.Status ? "Active" : "Inactive")
+            </p>
+            <div class="admin-card__actions">
+                <button type="button" class="btn-edit-admin" style="background: none; border: none; cursor: pointer; color: #4f46e5;"
+                        data-id="@admin.Id"
+                        data-username="@admin.Username"
+                        data-email="@admin.Email"
+                        data-status="@admin.Status.ToString().ToLower()">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Right Drawer -->
+<div class="mp-drawer-overlay" id="adminDrawerOverlay"></div>
+<div class="mp-drawer" id="adminDrawer">
+    <div class="drawer__header">
+        <div class="drawer__header-left">
+            <button type="button" class="drawer__close-btn" id="btnCloseDrawer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div>
+                <h3 class="drawer__title" id="drawerTitle">Add Theater Admin</h3>
+                <p class="drawer__subtitle" id="drawerSubtitle">Create a new theater admin</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert / Banner -->
+    <div class="alert alert--success" id="successBanner" style="display: none; margin: 1rem;">
+        <i class="fa-solid fa-check-circle alert__icon"></i>
+        <div class="alert__content">
+            <h4 class="alert__title">Success</h4>
+            <p class="alert__message">Theater Admin saved successfully!</p>
+        </div>
+    </div>
+
+    <!-- Error Banner -->
+    <div class="alert alert--error" id="errorBanner" style="display: none; margin: 1rem;">
+        <i class="fa-solid fa-triangle-exclamation alert__icon"></i>
+        <div class="alert__content">
+            <h4 class="alert__title">Error</h4>
+            <ul class="alert__list" id="errorList"></ul>
+        </div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" id="adminForm">
+        <input type="hidden" id="hdnAdminId" name="EditAdmin.Id" value="0" />
+        <div class="drawer__body">
+            
+            <div id="createFields">
+                <div class="drawer-fields">
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label class="drawer-field__label">Username</label>
+                            <input name="NewAdmin.Username" id="NewAdmin_Username" class="drawer-field__input" />
+                        </div>
+                    </div>
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label class="drawer-field__label">Email</label>
+                            <input name="NewAdmin.Email" id="NewAdmin_Email" type="email" class="drawer-field__input" />
+                        </div>
+                    </div>
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label class="drawer-field__label">Phone</label>
+                            <input name="NewAdmin.PhoneNumber" id="NewAdmin_PhoneNumber" class="drawer-field__input" />
+                        </div>
+                    </div>
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label class="drawer-field__label">Country</label>
+                            <input name="NewAdmin.Country" id="NewAdmin_Country" class="drawer-field__input" />
+                        </div>
+                    </div>
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label class="drawer-field__label">Password</label>
+                            <input name="NewAdmin.Password" type="password" id="NewAdmin_Password" class="drawer-field__input" />
+                        </div>
+                    </div>
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label class="drawer-field__label">Confirm Password</label>
+                            <input name="NewAdmin.ConfirmPassword" type="password" id="NewAdmin_ConfirmPassword" class="drawer-field__input" />
+                        </div>
+                    </div>
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label class="drawer-field__label">Status</label>
+                            <select name="NewAdmin.Status" id="NewAdmin_Status" class="drawer-field__input">
+                                <option value="true">Active</option>
+                                <option value="false">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="editFields" style="display:none;">
+                <div class="drawer-fields">
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label class="drawer-field__label">Username</label>
+                            <input name="EditAdmin.Username" id="EditAdmin_Username" class="drawer-field__input" />
+                        </div>
+                    </div>
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label class="drawer-field__label">Email</label>
+                            <input name="EditAdmin.Email" id="EditAdmin_Email" type="email" class="drawer-field__input" />
+                        </div>
+                    </div>
+                    <div class="drawer-row">
+                        <div class="drawer-field">
+                            <label class="drawer-field__label">Status</label>
+                            <select name="EditAdmin.Status" id="EditAdmin_Status" class="drawer-field__input">
+                                <option value="true">Active</option>
+                                <option value="false">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Note: Phone/Country omitted from basic edit for simplicity, though they exist in DTO -->
+                </div>
+            </div>
+
+        </div>
+        <div class="drawer__footer">
+            <button type="button" class="btn-secondary" id="btnCancelDrawer">Cancel</button>
+            <button type="submit" class="btn-primary" id="btnSaveAdmin">
+                <span class="btn-text">Save Admin</span>
+                <span class="spinner" style="display:none;"><i class="fa-solid fa-circle-notch fa-spin"></i></span>
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var $drawer = $('#adminDrawer');
+            var $overlay = $('#adminDrawerOverlay');
+            var $form = $('#adminForm');
+
+            function openDrawer() {
+                $drawer.addClass('open');
+                $overlay.addClass('open');
+            }
+
+            function closeDrawer() {
+                $drawer.removeClass('open');
+                $overlay.removeClass('open');
+            }
+
+            $('#btnCloseDrawer, #btnCancelDrawer, #adminDrawerOverlay').on('click', closeDrawer);
+
+            $('#btnOpenAddAdminDrawer').on('click', function () {
+                $('#hdnAdminId').val('0');
+                $('#drawerTitle').text('Add Theater Admin');
+                $form.attr('action', '?handler=CreateAdminAjax');
+                $form[0].reset();
+                $('#createFields').show();
+                $('#editFields').hide();
+                openDrawer();
+            });
+
+            $('.btn-edit-admin').on('click', function () {
+                var id = $(this).data('id');
+                var username = $(this).data('username');
+                var email = $(this).data('email');
+                var status = $(this).data('status');
+
+                $('#hdnAdminId').val(id);
+                $('#drawerTitle').text('Edit Theater Admin');
+                $form.attr('action', '?handler=UpdateAdminAjax');
+                
+                $('#EditAdmin_Username').val(username);
+                $('#EditAdmin_Email').val(email);
+                $('#EditAdmin_Status').val(status === 'false' ? 'false' : 'true');
+
+                $('#createFields').hide();
+                $('#editFields').show();
+                openDrawer();
+            });
+
+            $form.on('submit', function (e) {
+                e.preventDefault();
+                $('#errorBanner').hide();
+                $('#btnSaveAdmin .spinner').show();
+                $('#btnSaveAdmin .btn-text').hide();
+
+                $.ajax({
+                    url: $form.attr('action'),
+                    type: 'POST',
+                    data: new FormData(this),
+                    processData: false,
+                    contentType: false,
+                    success: function (res) {
+                        $('#btnSaveAdmin .spinner').hide();
+                        $('#btnSaveAdmin .btn-text').show();
+
+                        if (res.success) {
+                            $('#successBanner').show();
+                            setTimeout(function(){ location.reload(); }, 1000);
+                        } else {
+                            $('#errorList').empty();
+                            for (var key in res.errors) {
+                                res.errors[key].forEach(function(msg) {
+                                    $('#errorList').append('<li>' + msg + '</li>');
+                                });
+                            }
+                            $('#errorBanner').show();
+                        }
+                    },
+                    error: function () {
+                        $('#btnSaveAdmin .spinner').hide();
+                        $('#btnSaveAdmin .btn-text').show();
+                        $('#errorList').html('<li>An unexpected error occurred.</li>');
+                        $('#errorBanner').show();
+                    }
+                });
+            });
+        });
+    </script>
+}

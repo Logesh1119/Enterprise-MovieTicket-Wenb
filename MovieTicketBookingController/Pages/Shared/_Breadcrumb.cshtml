@@ -1,0 +1,36 @@
+﻿@{
+    var title = ViewData["Title"]?.ToString() ?? "Dashboard";
+    var parent = ViewData["Parent"]?.ToString() ?? "Home";
+}
+
+<section class="mp-breadcrumb">
+
+    <div class="mp-breadcrumb__container">
+
+        <ol class="mp-breadcrumb__list">
+
+            <li class="mp-breadcrumb__item">
+
+                <a asp-page="/Dashboard/Index">
+                    @parent
+                </a>
+
+            </li>
+
+            <li class="mp-breadcrumb__separator">
+
+                <i class="fa-solid fa-angle-right"></i>
+
+            </li>
+
+            <li class="mp-breadcrumb__item active">
+
+                @title
+
+            </li>
+
+        </ol>
+
+    </div>
+
+</section>

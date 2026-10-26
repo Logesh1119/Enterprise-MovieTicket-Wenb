@@ -1,0 +1,29 @@
+# Visual Studio / ASP.NET Core
+.vs/
+bin/
+obj/
+Debug/
+Release/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Secrets
+appsettings.Development.json
+*.secrets
+
+# Temporary files and logs
+*.log
+server_log*.txt
+server_err*.txt
+Thumbs.db
+.DS_Store
+
+# IDE and Editor files
+.idea/
+.vscode/
+
+# Build and Publish output
+publish/
+*.publishproj

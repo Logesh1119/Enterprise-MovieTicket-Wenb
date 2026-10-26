@@ -1,0 +1,120 @@
+@page
+@model MovieTicketBooking.Pages.SuperAdmin.Dashboard.DashboardModel
+@{
+    ViewData["Title"] = "Platform Dashboard";
+    Layout = "/Pages/Shared/_AppLayout.cshtml";
+    ViewData["Parent"] = "Super Admin > Dashboard";
+}
+
+<link rel="stylesheet" href="~/css/Dashboard/Dashboard.css" asp-append-version="true" />
+
+<div class="dashboard-container">
+    <!-- KPI Row -->
+    <div class="kpi-row">
+        <div class="kpi-card">
+            <div class="kpi-title">Total Users</div>
+            <div class="kpi-value">@Model.DashboardData.Metrics.TotalUsers</div>
+            <div class="kpi-subtitle">Registered on platform</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-title">Total Theaters</div>
+            <div class="kpi-value">@Model.DashboardData.Metrics.TotalTheaters</div>
+            <div class="kpi-subtitle">Active managed theaters</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-title">Total Movies</div>
+            <div class="kpi-value">@Model.DashboardData.Metrics.TotalMovies</div>
+            <div class="kpi-subtitle">Total distinct movies</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-title">Total Shows</div>
+            <div class="kpi-value">@Model.DashboardData.Metrics.TotalShows</div>
+            <div class="kpi-subtitle">Scheduled shows</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-title">Platform Weekly Revenue</div>
+            <div class="kpi-value">₹@(Model.DashboardData.Metrics.WeeklyRevenue.ToString("N0"))</div>
+            <div class="kpi-subtitle">Global revenue last 7 days</div>
+        </div>
+    </div>
+
+    <!-- Booking Trends Chart -->
+    <div class="chart-section">
+        <div class="chart-header">
+            <div class="chart-title">Global Platform Booking Trends</div>
+            <div class="update-info"><i class="fa-solid fa-clock"></i> Global revenue updated every 30 minutes</div>
+        </div>
+        <div style="position: relative; height: 300px; width: 100%;">
+            <canvas id="bookingChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Bottom Row: Recent Activity & Top Movies -->
+    <div class="bottom-row">
+        <div class="recent-activity">
+            <div class="section-title">Recent platform activity</div>
+            @if(Model.DashboardData.RecentActivities.Any())
+            {
+                <ul class="activity-list">
+                    @foreach (var activity in Model.DashboardData.RecentActivities)
+                    {
+                        <li class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fa-solid fa-bolt"></i>
+                            </div>
+                            <div class="activity-details">
+                                <div class="activity-type">@activity.ActionType</div>
+                                <div class="activity-desc">@activity.ActionDescription</div>
+                                <div class="activity-time">@activity.CreatedAtString</div>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="text-muted">No recent activity found.</p>
+            }
+        </div>
+
+        <div class="top-movies">
+            <div class="section-title">Top 5 performing movies (Global)</div>
+            @if(Model.DashboardData.TopMovies.Any())
+            {
+                <div class="movie-list">
+                    @foreach(var movie in Model.DashboardData.TopMovies)
+                    {
+                        var posterUrl = !string.IsNullOrEmpty(movie.PosterUrl) ? movie.PosterUrl : "/images/default-movie.jpg";
+                        <div class="movie-item">
+                            <div class="movie-rank">#@movie.Rank</div>
+                            <img src="@posterUrl" alt="@movie.MovieName" class="movie-poster" />
+                            <div class="movie-details">
+                                <div class="movie-name">@movie.MovieName</div>
+                                <div class="movie-meta">@movie.Duration mins | @movie.ReleaseYear | @movie.Language | @movie.Format | @movie.ScreenCount Screens</div>
+                                <div class="movie-stats">
+                                    <div class="stat-item">
+                                        <span class="text-muted">Global Rev.</span>
+                                        <span class="stat-value">₹@(movie.Revenue.ToString("N0"))</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="text-muted">Occupancy</span>
+                                        <span class="stat-value">@(movie.Occupancy.ToString("0.0"))%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">No movies are currently performing.</p>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="~/js/Dashboard/Dashboard.js" asp-append-version="true"></script>
+}
